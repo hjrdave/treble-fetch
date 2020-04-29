@@ -26,7 +26,10 @@
     "typescript",
     "react",
     "react-hooks",
-    "global-state-management"
+    "global-state-management",
+    "fetching",
+    "prefetching",
+    "preloading"
   ],
   "author": "David Sanders <dsanders@mediafish.io>",
   "license": "MIT",
@@ -41,6 +44,7 @@
     "@babel/preset-react": "^7.8.3",
     "@babel/preset-typescript": "^7.8.3",
     "@types/react": "^16.9.23",
+    "@types/react-router-dom": "^5.1.5",
     "babel-eslint": "^10.0.1",
     "babel-plugin-add-module-exports": "^1.0.0",
     "babel-plugin-minify-dead-code-elimination": "^0.5.1",
@@ -57,14 +61,13 @@
     "mocha": "^6.1.3",
     "nyc": "^13.3.0",
     "rimraf": "^2.6.2",
+    "treble-gsm": "file:../../../../usr/local/lib/node_modules/treble-gsm",
     "vsts": "^2.1.2"
   },
   "dependencies": {},
   "peerDependencies": {
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
-    "treble-gsm": "^1.2.3",
-    "@types/react-router-dom": "^5.1.3",
     "react-router-dom": "^5.1.2"
   }
 }
