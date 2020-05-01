@@ -1,11 +1,14 @@
+import React from 'react';
 import {updateGlobalCache} from '../global-cache';
 
 const prefetch = async (url: string) => {
+ 
     try {
       const res = await fetch(url);
       const json = await res.json();
       updateGlobalCache(url, json);
-      console.log(json);
+      //console.log(json);
+      return json;
     } catch (error) {
       throw error;
     }

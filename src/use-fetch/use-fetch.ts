@@ -2,19 +2,21 @@
     Fetch Hook
     useFetch hook that fetches data from api and has global state integration
 */
-import {useEffect, useState} from 'react';
+import {useEffect, useState, useRef} from 'react';
 import IUseFetch from './interface-use-fetch';
 import {getGlobalCache, updateGlobalCache, removeGlobalCache} from '../global-cache';
 
 const useFetch: IUseFetch = (url, options) => {
-    //sets initial response to cached or default
+    //sets initial response to cached or default=
+    const isCancelled = useRef(false);
     const [response, setResponse] = useState(getGlobalCache(url) || options.default);
     const [cache, setCache] = useState((options?.cacheRes !== false) ? true : false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const fetchData = async () => {
+
+    const fetchData = async (url: string) => {
       try {
-        const res = await fetch(url,{
+        const res: any = await fetch(url,{
           method: options?.method,
           mode: options?.mode, 
           redirect: options?.redirect,
@@ -23,8 +25,12 @@ const useFetch: IUseFetch = (url, options) => {
           credentials: options?.credentials
         });
         const json = await res.json();
-        setResponse(json);
-        setLoading(false);
+
+        //makes sure component is still mounted before setting state
+        if(!isCancelled.current){
+          setResponse(json);
+          setLoading(false);
+        }
         //puts new response data into global cache
         if(cache){
           updateGlobalCache(url, json);
@@ -34,17 +40,20 @@ const useFetch: IUseFetch = (url, options) => {
          removeGlobalCache(url);
         }
       } catch (error) {
-        setError(error);
+        if(!isCancelled.current){
+          setError(error);
+        }
       }
     };
     
     useEffect(() => {
-      fetchData();
-    }, [options?.trigger]);
-    
+      fetchData(url);
+      return () => {
+        isCancelled.current = true;
+      };
+    },[]);
     
     return {response, loading, error};
-    
     
   };
 

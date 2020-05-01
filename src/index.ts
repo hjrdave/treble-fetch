@@ -3,5 +3,6 @@ import TrebleRoute from './treble-route';
 import trebleImport from './treble-import';
 import TrebleLink from './treble-link';
 import prefetch from './prefetch';
+import createRoutes from './create-routes';
 
-export {useFetch, TrebleRoute, trebleImport, TrebleLink, prefetch};
+export {useFetch, TrebleRoute, trebleImport, TrebleLink, prefetch, createRoutes};
