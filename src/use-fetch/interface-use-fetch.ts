@@ -5,8 +5,8 @@ Interface for useFetch hook
 export default interface IUseFetch{
     (
       url: string,
-      options: {
-        default: any,
+      options?: {
+        default?: any,
         cacheRes?: boolean,
         trigger?: any,
         method?: 'GET'| 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'COPY' |'OPTIONS',

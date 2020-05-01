@@ -22,6 +22,7 @@ export default function TrebleRoute({children, RouteIndex}: ITrebleRoute){
     useEffect(() => {
       updateStore('globalCache', RouteIndex, dispatch);
     },[]);
+
     return(
         <>
             <Suspense fallback={'Loading...'}>
@@ -33,8 +34,8 @@ export default function TrebleRoute({children, RouteIndex}: ITrebleRoute){
                         }
                         return(
                                 (route.data) ?
-                            <Route exact key={uniqid()} path={route.path} component={() => <Component trebleFetch={trebleFetch}/>}/> :
-                            <Route exact key={uniqid()} path={route.path} component={() => <Component/>} />
+                            <Route exact key={uniqid()} path={route.path} render={() => <Component trebleFetch={trebleFetch}/>}/> :
+                            <Route exact key={uniqid()} path={route.path} render={() => <Component/>} />
                         )
                     })
                 }
