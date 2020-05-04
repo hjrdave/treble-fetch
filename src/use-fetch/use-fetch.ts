@@ -5,13 +5,19 @@
 import {useEffect, useState, useRef} from 'react';
 import IUseFetch from './interface-use-fetch';
 import {getGlobalCache, updateGlobalCache, removeGlobalCache} from '../global-cache';
+import {useTreble} from 'treble-gsm';
 
 const useFetch: IUseFetch = (url, options) => {
+
+    const [{trebleFetchCache}] = useTreble();
     //sets initial response to cached or default=
     const isCancelled = useRef(false);
     const [cache] = useState((options?.cacheRes !== false) ? true : false);
-    const [response, setResponse] = useState(getGlobalCache(url) || options?.default || []);
-    const [loading] = useState(true);
+    const [response, setResponse] = useState(
+      (trebleFetchCache[url]) ? {data: trebleFetchCache[url]} :
+      (options?.default) ? {data: options?.default} : {data: []}
+    );
+    const [loading, setLoading] = useState((trebleFetchCache[url]) ? false : true);
     const [updating, setUpdating] = useState(true);
     const [error, setError] = useState(null);
 
@@ -31,20 +37,21 @@ const useFetch: IUseFetch = (url, options) => {
         
         //makes sure response is 200 before setting state and cache
         if(res.ok){
-          
+          res.data = json;
           //makes sure component is still mounted before setting state
           if(!(isCancelled.current)){
-             setResponse(json);
+             setResponse(res);
+             setLoading(false);
              setUpdating(false);
-             setError(res);
+             setError(res.status);
           }
           //puts new response data into global cache
           if(cache){
-            updateGlobalCache(url, json);
+            //updateGlobalCache(url, json);
           }
           //if cacheRes option is set to false it will remove it
           else{
-          removeGlobalCache(url);
+            //removeGlobalCache(url);
           }
         }
         else{
@@ -68,7 +75,7 @@ const useFetch: IUseFetch = (url, options) => {
         isCancelled.current = true;
       };
       
-    },[]);
+    },[options?.trigger]);
     
     return {response, loading, updating, error};
     

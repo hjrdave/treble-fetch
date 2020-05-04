@@ -1,7 +1,6 @@
 import React, {Suspense, useEffect} from 'react';
 import {updateStore, useTreble} from 'treble-gsm';
 import {Route} from 'react-router-dom';
-import uniqid from 'uniqid';
 
 interface ITrebleRoute{
     children?: JSX.Element | JSX.Element[],
@@ -16,29 +15,35 @@ interface ITrebleRoute{
 export default function TrebleRoute({children, RouteIndex}: ITrebleRoute){
 
     //passed useTreble hook
-    const [{}, dispatch] = useTreble();
+    const [{trebleFetchCache}, dispatch] = useTreble();
+    const handleRoutes = () => {
+        
+        let Routes = RouteIndex?.map((route) => {
+            let Component = route.component;
+            let trebleFetch = {
+                data: route.data || []
+            }
+            return(
+                <Route exact key={route.path} path={route.path} render={(props) => <Component {...props} trebleFetch={trebleFetch}/>}/>
+            )
+        });
+        return Routes;
+    }
 
     //Put routes into Store
     useEffect(() => {
-      updateStore('globalCache', RouteIndex, dispatch);
+        updateStore('globalCache', RouteIndex, dispatch);
     },[]);
+
+    useEffect(() => {
+        
+        console.log(trebleFetchCache);
+    },[trebleFetchCache]);
 
     return(
         <>
             <Suspense fallback={'Loading...'}>
-                {
-                    RouteIndex?.map(route => {
-                        let Component = route.component;
-                        let trebleFetch = {
-                            data: route.data
-                        }
-                        return(
-                                (route.data) ?
-                            <Route exact key={uniqid()} path={route.path} render={() => <Component trebleFetch={trebleFetch}/>}/> :
-                            <Route exact key={uniqid()} path={route.path} render={() => <Component/>} />
-                        )
-                    })
-                }
+                {handleRoutes()}
                 {children}
             </Suspense>
         </>
