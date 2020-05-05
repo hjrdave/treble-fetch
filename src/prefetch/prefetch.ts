@@ -1,7 +1,16 @@
-import React from 'react';
+/*
+  prefetch.ts
+  Used to fetch data from within or without a React component.
+*/
+
 import {updateGlobalCache} from '../global-cache';
 
-const prefetch = async (url: string) => {
+interface IPrefetch{
+  (
+    url: string
+  ): any
+}
+const prefetch: IPrefetch = async (url) => {
  
     try {
       const res = await fetch(url);
