@@ -1,7 +1,7 @@
 {
   "name": "treble-fetch",
-  "version": "1.0.0-alpha.1",
-  "description": "Fetching, Prefetching, and Cache Extension for Treble-GSM",
+  "version": "1.0.0-alpha.2",
+  "description": "Fetching, Prefetching, and Cache Extension for Treble Global State Management Library",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "scripts": {

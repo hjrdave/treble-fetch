@@ -1,5 +1,5 @@
 /*
-    TrebleRoute
+    IndexRoutes
     Processes routes with react-router Route comp.
 */
 
@@ -7,9 +7,9 @@ import React, {Suspense, useEffect} from 'react';
 import {updateStore, useTreble} from 'treble-gsm';
 import {Route} from 'react-router-dom';
 
-interface ITrebleRoute{
+interface Props{
     children?: JSX.Element | JSX.Element[],
-    RouteIndex: {
+    routes: {
         path: string,
         exact: boolean,
         component: React.LazyExoticComponent<any>,
@@ -17,7 +17,7 @@ interface ITrebleRoute{
     }[]
 }
 
-export default function TrebleRoute({children, RouteIndex}: ITrebleRoute){
+export default function IndexRoutes({children, routes}: Props){
 
     //passed useTreble hook
     const [{}, dispatch] = useTreble();
@@ -25,7 +25,7 @@ export default function TrebleRoute({children, RouteIndex}: ITrebleRoute){
     //proccesses routes from RouteIndex and returns
     const handleRoutes = () => {
         
-        let Routes = RouteIndex?.map((route) => {
+        let renderedRoutes = routes?.map((route) => {
 
             //route component
             let Component = route.component;
@@ -39,19 +39,19 @@ export default function TrebleRoute({children, RouteIndex}: ITrebleRoute){
                 <Route exact key={route.path} path={route.path} render={(props) => <Component {...props} trebleFetch={trebleFetch}/>}/>
             )
         });
-        return Routes;
+        return renderedRoutes;
     }
 
     //Put routes into Store
     useEffect(() => {
-        updateStore('updateTrebleFetchRouteIndex', RouteIndex, dispatch);
+        updateStore('updateTrebleFetchRouteIndex', routes, dispatch);
     },[]);
 
     return(
         <>
             <Suspense fallback={'Loading...'}>
-                {handleRoutes()}
                 {children}
+                {handleRoutes()}
             </Suspense>
         </>
     )
