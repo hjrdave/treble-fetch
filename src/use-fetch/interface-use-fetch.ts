@@ -13,7 +13,7 @@ export default interface IUseFetch{
         mode?: "navigate" | "same-origin" | "no-cors" | "cors",
         redirect?: "follow" | "error" | "manual",
         headers?: Headers | string[][] | Record<string, string>,
-        body?:string | Blob | ArrayBufferView | ArrayBuffer | FormData | URLSearchParams | ReadableStream<Uint8Array> | null,
+        body?:{[key:string]: any} | string | Blob | ArrayBufferView | ArrayBuffer | FormData | URLSearchParams | ReadableStream<Uint8Array> | null,
         credentials?: "same-origin" | "omit" | "include" 
       }
     ): {
