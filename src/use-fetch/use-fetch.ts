@@ -34,7 +34,7 @@ const useFetch: IUseFetch = (url, options) => {
     const [updating, setUpdating] = useState(true);
 
     //sets server error
-    const [error, setError] = useState(null);
+    const [error, setError] = useState({status: undefined});
 
     //fetches api data
     const fetchData = async (url: string) => {
@@ -59,7 +59,7 @@ const useFetch: IUseFetch = (url, options) => {
              setResponse(res);
              setLoading(false);
              setUpdating(false);
-             setError(res.status);
+             setError({status: res.status});
           }
           //puts new response data into local storage cache if specified
           if(cache){
@@ -73,7 +73,7 @@ const useFetch: IUseFetch = (url, options) => {
         else{
           //makes sure component is still mounted before setting state
           if(!isCancelled.current || isMounted){
-            setError(res);
+            setError({status: res.status});
           }
         }
       } catch (error) {
