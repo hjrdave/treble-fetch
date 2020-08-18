@@ -5,6 +5,10 @@
 import React from "react";
 
 const useFetch = (url: string, options: any) => {
+
+  //options
+  const triggerFetch = options?.trigger;
+
   //returned response object state
   const [response, setResponse] = React.useState({ data: [] });
 
@@ -49,7 +53,7 @@ const useFetch = (url: string, options: any) => {
     return function cleanup() {
       abortController.abort();
     };
-  }, []);
+  }, [triggerFetch]);
 
   return {
     response,
