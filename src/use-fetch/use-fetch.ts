@@ -21,6 +21,7 @@ const useFetch = (url: string, options: any) => {
   //fetch data
   const fetchData = async (signal: any) => {
     try {
+      setLoading(true);
       const res = await fetch(url, {
         ...options,
         signal: signal,
