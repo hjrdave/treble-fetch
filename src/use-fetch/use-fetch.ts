@@ -46,14 +46,13 @@ const useFetch = (url: string, options: any) => {
     //creates AbortController to cancel all subscriptions in case comp unmounts before fetch finishes
     const abortController = new AbortController();
     const signal = abortController.signal;
-
     fetchData(signal);
 
     //return cleanup function when comp unmounts
     return function cleanup() {
       abortController.abort();
     };
-  }, [triggerFetch]);
+  }, [triggerFetch, url]);
 
   return {
     response,
