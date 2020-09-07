@@ -6,8 +6,8 @@ import React from "react";
 
 const useFetch = (url: string, options: any) => {
 
-  //options
-  const triggerFetch = options?.trigger;
+  //detects if mounting is the initial mount
+  const isInitialMountRef = React.useRef(true);
 
   //returned response object state
   const [response, setResponse] = React.useState({ data: [] });
@@ -43,22 +43,44 @@ const useFetch = (url: string, options: any) => {
     }
   };
 
+  //makes sure useFetch can react to state changes to options.trigger or url
+  React.useEffect(() => {
+    if (!isInitialMountRef.current) {
+      //creates AbortController to cancel all subscriptions in case comp unmounts before fetch finishes
+      const abortController = new AbortController();
+      const signal = abortController.signal;
+
+      fetchData(signal);
+
+      //return cleanup function when comp unmounts
+      return function cleanup() {
+        abortController.abort();
+      };
+    }
+  }, [...options?.trigger, url]);
+
+  //fetches data on initial mount
   React.useEffect(() => {
     //creates AbortController to cancel all subscriptions in case comp unmounts before fetch finishes
     const abortController = new AbortController();
     const signal = abortController.signal;
     fetchData(signal);
 
+    //makes sure initial mount is set to false after initial mounting
+    if (isInitialMountRef.current) {
+      isInitialMountRef.current = false;
+    }
+
     //return cleanup function when comp unmounts
     return function cleanup() {
       abortController.abort();
     };
-  }, [triggerFetch, url]);
+  }, []);
 
   return {
     response,
     error,
-    loading,
+    loading
   };
 };
 
