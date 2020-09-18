@@ -3,20 +3,21 @@
     useFetch hook that fetches data from api and has global state integration
 */
 import React from "react";
+import { useNonInitialMountEffect } from '../hooks';
 
 const useFetch = (url: string, options: any) => {
 
-  //detects if mounting is the initial mount
-  const isInitialMountRef = React.useRef(true);
-
-  //if hold is set to true useFetch will not fire (good for preventing premature firing on mount)
+  //if hold is set to true useFetch will not fire (good for preventing premature firing)
   const hold = options?.hold;
+
+  //if option set to false useFetch will not fire on initial mount
+  const initialMount = (options?.initialMount === false) ? false : true;
 
   //returned response object state
   const [response, setResponse] = React.useState<{ [key: string]: any, data: any[] } | { data: any[] }>({ data: [] });
 
   //returned loading state object (changes to true when response resolves)
-  const [loading, setLoading] = React.useState(true);
+  const [loading, setLoading] = React.useState((initialMount === false) ? false : true);
 
   //returned error object state
   const [error, setError] = React.useState(null);
@@ -48,12 +49,27 @@ const useFetch = (url: string, options: any) => {
     }
   };
 
-  //makes sure useFetch can react to state changes to options.trigger or url
+  //makes sure useFetch can react to state changes to options.trigger or url not on initial mount
+  useNonInitialMountEffect(() => {
+    //creates AbortController to cancel all subscriptions in case comp unmounts before fetch finishes
+    const abortController = new AbortController();
+    const signal = abortController.signal;
+    if (!hold) {
+      fetchData(signal);
+    }
+    //return cleanup function when comp unmounts
+    return function cleanup() {
+      abortController.abort();
+    };
+  }, [...options?.trigger, url]);
+
+  //fetches data on initial mount
   React.useEffect(() => {
-    if (!isInitialMountRef.current) {
+    if (!(initialMount === false)) {
       //creates AbortController to cancel all subscriptions in case comp unmounts before fetch finishes
       const abortController = new AbortController();
       const signal = abortController.signal;
+
       if (!hold) {
         fetchData(signal);
       }
@@ -62,25 +78,6 @@ const useFetch = (url: string, options: any) => {
         abortController.abort();
       };
     }
-  }, [...options?.trigger, url]);
-
-  //fetches data on initial mount
-  React.useEffect(() => {
-    //creates AbortController to cancel all subscriptions in case comp unmounts before fetch finishes
-    const abortController = new AbortController();
-    const signal = abortController.signal;
-    if (!hold) {
-      fetchData(signal);
-    }
-    //makes sure initial mount is set to false after initial mounting
-    if (isInitialMountRef.current) {
-      isInitialMountRef.current = false;
-    }
-
-    //return cleanup function when comp unmounts
-    return function cleanup() {
-      abortController.abort();
-    };
   }, []);
 
   return {
