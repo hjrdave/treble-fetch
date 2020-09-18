@@ -14,7 +14,7 @@ const useFetch = (url: string, options: any) => {
   const initialMount = (options?.initialMount === false) ? false : true;
 
   //returned response object state
-  const [response, setResponse] = React.useState<{ [key: string]: any, data: any[] } | { data: any[] }>({ data: [] });
+  const [response, setResponse] = React.useState({ data: [] });
 
   //returned loading state object (changes to true when response resolves)
   const [loading, setLoading] = React.useState((initialMount === false) ? false : true);
