@@ -13,13 +13,13 @@ const useFetch = (url: string, options: any) => {
   const hold = options?.hold;
 
   //returned response object state
-  const [response, setResponse] = React.useState({ data: [] });
+  const [response, setResponse] = React.useState<{ [key: string]: any, data: any[] } | { data: any[] }>({ data: [] });
 
   //returned loading state object (changes to true when response resolves)
   const [loading, setLoading] = React.useState(true);
 
   //returned error object state
-  const [error, setError] = React.useState(false);
+  const [error, setError] = React.useState(null);
 
   //fetch data
   const fetchData = async (signal: any) => {
@@ -37,11 +37,13 @@ const useFetch = (url: string, options: any) => {
         (res as any).data = json;
         //set returned state objects
         setResponse(res as any);
+        setError(null);
         setLoading(false);
       }
     } catch (error) {
       if (!(error.name === "AbortError")) {
         setError(error);
+        setLoading(false);
       }
     }
   };
