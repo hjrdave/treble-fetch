@@ -13,6 +13,9 @@ const useFetch = (url: string, options: any) => {
   //if option set to false useFetch will not fire on initial mount
   const initialMount = (options?.initialMount === false) ? false : true;
 
+  //toggled refresh state that triggers a new fetch request
+  const [refreshDataState, setRefreshDataState] = React.useState(false);
+
   //returned response object state
   const [response, setResponse] = React.useState({ data: [] });
 
@@ -21,6 +24,23 @@ const useFetch = (url: string, options: any) => {
 
   //returned error object state
   const [error, setError] = React.useState(null);
+
+  //refresh method for refetching data without having to set state.
+  const refreshFetch = (loading: boolean) => {
+    console.log(loading);
+    if (loading === false || loading === undefined) {
+      console.log(loading);
+      if (refreshDataState === true) {
+        setRefreshDataState(false);
+      }
+      else {
+        setRefreshDataState(true);
+      }
+    }
+  };
+
+  //returns refresh method
+  const [refresh, setRefresh] = React.useState((loading: boolean) => refreshFetch);
 
   //fetch data
   const fetchData = async (signal: any) => {
@@ -40,11 +60,13 @@ const useFetch = (url: string, options: any) => {
         setResponse(res as any);
         setError(null);
         setLoading(false);
+        setRefresh((loading: boolean) => refreshFetch);
       }
     } catch (error) {
       if (!(error.name === "AbortError")) {
         setError(error);
         setLoading(false);
+        setRefresh((loading: boolean) => refreshFetch);
       }
     }
   };
@@ -61,7 +83,7 @@ const useFetch = (url: string, options: any) => {
     return function cleanup() {
       abortController.abort();
     };
-  }, [...options?.trigger || [], url]);
+  }, [...options?.trigger || [], url, refreshDataState]);
 
   //fetches data on initial mount
   React.useEffect(() => {
@@ -83,7 +105,8 @@ const useFetch = (url: string, options: any) => {
   return {
     response,
     error,
-    loading
+    loading,
+    refresh
   };
 };
 

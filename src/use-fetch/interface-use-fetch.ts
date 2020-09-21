@@ -14,20 +14,21 @@ export default interface IUseFetch {
       redirect?: "follow" | "error" | "manual";
       headers?: Headers | string[][] | Record<string, string>;
       body?:
-        | { [key: string]: any }
-        | string
-        | Blob
-        | ArrayBufferView
-        | ArrayBuffer
-        | FormData
-        | URLSearchParams
-        | ReadableStream<Uint8Array>
-        | null;
+      | { [key: string]: any }
+      | string
+      | Blob
+      | ArrayBufferView
+      | ArrayBuffer
+      | FormData
+      | URLSearchParams
+      | ReadableStream<Uint8Array>
+      | null;
       credentials?: "same-origin" | "omit" | "include";
     }
   ): {
     loading: boolean;
     response: any;
     error: any;
+    refresh: (loading: boolean) => void
   };
 }
