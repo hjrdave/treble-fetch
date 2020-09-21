@@ -61,7 +61,7 @@ const useFetch = (url: string, options: any) => {
     return function cleanup() {
       abortController.abort();
     };
-  }, [...options?.trigger, url]);
+  }, [...options?.trigger || [], url]);
 
   //fetches data on initial mount
   React.useEffect(() => {
