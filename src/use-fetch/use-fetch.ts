@@ -25,11 +25,12 @@ const useFetch = (url: string, options: any) => {
   //returned error object state
   const [error, setError] = React.useState(null);
 
+  //test resolve
+  const [resolve, setResolve] = React.useState<Promise<Response>>();
+
   //refresh method for refetching data without having to set state.
   const refreshFetch = (loading: boolean) => {
-    console.log(loading);
     if (loading === false || loading === undefined) {
-      console.log(loading);
       if (refreshDataState === true) {
         setRefreshDataState(false);
       }
@@ -43,14 +44,20 @@ const useFetch = (url: string, options: any) => {
   const [refresh, setRefresh] = React.useState((loading: boolean) => refreshFetch);
 
   //fetch data
-  const fetchData = async (signal: any) => {
+  const fetchData = async (signal: any, method?: any) => {
     try {
       setLoading(true);
-      const res = await fetch(url, {
+
+      const fetchMethod = fetch(url, {
         ...options,
         signal: signal,
+        method: method || options?.method,
         body: JSON.stringify(options?.body),
       });
+
+      setResolve(fetchMethod);
+
+      const res = await fetchMethod;
       const json = await res.json();
 
       if (res.ok) {
@@ -70,6 +77,9 @@ const useFetch = (url: string, options: any) => {
       }
     }
   };
+
+  //test post method
+  //const [post, setPost] = React.useState(() => alert('foo'));
 
   //makes sure useFetch can react to state changes to options.trigger or url not on initial mount
   useNonInitialMountEffect(() => {
@@ -106,7 +116,9 @@ const useFetch = (url: string, options: any) => {
     response,
     error,
     loading,
-    refresh
+    refresh,
+    resolve,
+    //post
   };
 };
 
