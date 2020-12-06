@@ -1,3 +1,4 @@
-import TrebleFetchStore from './treble-fetch-store';
+import TrebleFetchStore, { TStore } from './treble-fetch-store';
 
+export { TStore };
 export default TrebleFetchStore;
