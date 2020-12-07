@@ -93,7 +93,7 @@ const useFetch = (url: string, options: any) => {
     return function cleanup() {
       abortController.abort();
     };
-  }, [...options?.trigger || [], url, refreshDataState]);
+  }, [...options?.trigger || [], url, refreshDataState, hold]);
 
   //fetches data on initial mount
   React.useEffect(() => {
@@ -117,8 +117,7 @@ const useFetch = (url: string, options: any) => {
     error,
     loading,
     refresh,
-    resolve,
-    //post
+    resolve
   };
 };
 

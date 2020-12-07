@@ -1,6 +1,6 @@
 {
   "name": "treble-fetch",
-  "version": "1.0.0-alpha.22",
+  "version": "1.0.0-alpha.23",
   "description": "Fetching, Prefetching, and Cache Extension for Treble Global State Management Library",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
@@ -45,7 +45,6 @@
     "@babel/preset-react": "^7.8.3",
     "@babel/preset-typescript": "^7.8.3",
     "@types/node": "^13.13.4",
-    "@types/react": "^16.9.44",
     "@types/uniqid": "^4.1.3",
     "babel-eslint": "^10.0.1",
     "babel-plugin-add-module-exports": "^1.0.0",
@@ -63,14 +62,14 @@
     "mocha": "^6.1.3",
     "nyc": "^13.3.0",
     "rimraf": "^2.6.2",
-    "treble-gsm": "^2.1.5",
     "vsts": "^2.1.2"
   },
-  "dependencies": {},
+  "dependencies": {
+    "uniqid": "^5.2.0"
+  },
   "peerDependencies": {
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
-    "treble-gsm": "^2.1.0",
-    "uniqid": "^5.2.0"
+    "treble-gsm": "^2.1.0"
   }
 }
