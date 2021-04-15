@@ -29,6 +29,7 @@ export default interface IUseFetch {
     loading: boolean;
     response: any;
     error: any;
+    isAuth: boolean | undefined;
     refresh: (loading: boolean) => void
   };
 }

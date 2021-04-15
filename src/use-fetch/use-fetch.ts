@@ -17,7 +17,7 @@ const useFetch = (url: string, options: any) => {
   const [refreshDataState, setRefreshDataState] = React.useState(false);
 
   //returned response object state
-  const [response, setResponse] = React.useState({ data: [] });
+  const [response, setResponse] = React.useState<{ data: { Result: any[] } }>({ data: { Result: [] } });
 
   //returned loading state object (changes to true when response resolves)
   const [loading, setLoading] = React.useState((initialMount === false) ? false : true);
@@ -27,6 +27,9 @@ const useFetch = (url: string, options: any) => {
 
   //test resolve
   const [resolve, setResolve] = React.useState<Promise<Response>>();
+
+  //check for 401 errors (authentication)
+  const [isAuth, setIsAuth] = React.useState<boolean | undefined>(undefined);
 
   //refresh method for refetching data without having to set state.
   const refreshFetch = (loading: boolean) => {
@@ -61,15 +64,21 @@ const useFetch = (url: string, options: any) => {
       const json = await res.json();
 
       if (res.ok) {
+        (res as any).data = { Result: [] };
         //assigns json res
-        (res as any).data = json;
+        (res as any).data.Result = json;
         //set returned state objects
         setResponse(res as any);
         setError(null);
         setLoading(false);
+        setIsAuth(true);
         setRefresh((loading: boolean) => refreshFetch);
       }
+      else if (res?.status === 401) {
+        setIsAuth(false);
+      }
     } catch (error) {
+
       if (!(error.name === "AbortError")) {
         setError(error);
         setLoading(false);
@@ -117,7 +126,8 @@ const useFetch = (url: string, options: any) => {
     error,
     loading,
     refresh,
-    resolve
+    resolve,
+    isAuth
   };
 };
 
