@@ -4,7 +4,7 @@ const useNonInitialEffect = (effect: React.EffectCallback, deps?: React.Dependen
     const initialRender = React.useRef(true);
 
     React.useEffect(() => {
-        let effectReturns: void | (() => void | undefined) = () => { };
+        let effectReturns: void | (() => void) = () => { };
 
         if (initialRender.current) {
             initialRender.current = false;
