@@ -17,7 +17,7 @@ const useFetch = (url: string, options: any) => {
   const [refreshDataState, setRefreshDataState] = React.useState(false);
 
   //returned response object state
-  const [response, setResponse] = React.useState<{ data: { Result: any[] } }>({ data: { Result: [] } });
+  const [response, setResponse] = React.useState<{ data: { [key: string]: any } }>({ data: { Result: [] } });
 
   //returned loading state object (changes to true when response resolves)
   const [loading, setLoading] = React.useState((initialMount === false) ? false : true);
@@ -64,9 +64,9 @@ const useFetch = (url: string, options: any) => {
       const json = await res.json();
 
       if (res.ok) {
-        (res as any).data = { Result: [] };
+        (res as any).data = {};
         //assigns json res
-        (res as any).data.Result = json;
+        (res as any).data = json;
         //set returned state objects
         setResponse(res as any);
         setError(null);
