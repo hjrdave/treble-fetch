@@ -5,7 +5,7 @@
 import React from "react";
 import { useNonInitialMountEffect } from '../hooks';
 
-const useFetch = (url: string, options: any) => {
+const useFetch = (url: string, options?: any) => {
 
   //if hold is set to true useFetch will not fire (good for preventing premature firing)
   const hold = options?.hold;
@@ -14,7 +14,7 @@ const useFetch = (url: string, options: any) => {
   const initialMount = (options?.initialMount === false) ? false : true;
 
   //toggled refresh state that triggers a new fetch request
-  const [refreshDataState, setRefreshDataState] = React.useState(false);
+  const [refreshDataState, setRefreshDataState] = React.useState([]);
 
   //returned response object state
   const [response, setResponse] = React.useState<{ data: { [key: string]: any } }>({ data: { Result: [] } });
@@ -32,19 +32,14 @@ const useFetch = (url: string, options: any) => {
   const [isAuth, setIsAuth] = React.useState<boolean | undefined>(undefined);
 
   //refresh method for refetching data without having to set state.
-  const refreshFetch = (loading: boolean) => {
-    if (loading === false || loading === undefined) {
-      if (refreshDataState === true) {
-        setRefreshDataState(false);
-      }
-      else {
-        setRefreshDataState(true);
-      }
+  const refresh = (loading?: boolean) => {
+    if (!loading) {
+      setRefreshDataState([]);
     }
   };
 
   //returns refresh method
-  const [refresh, setRefresh] = React.useState((loading: boolean) => refreshFetch);
+  //const [refresh] = React.useState(() => reFetch);
 
   //fetch data
   const fetchData = async (signal: any, method?: any) => {
@@ -72,7 +67,7 @@ const useFetch = (url: string, options: any) => {
         setError(null);
         setLoading(false);
         setIsAuth(true);
-        setRefresh((loading: boolean) => refreshFetch);
+        //setRefresh(refreshFetch);
       }
       else if (res?.status === 401) {
         setIsAuth(false);
@@ -82,7 +77,7 @@ const useFetch = (url: string, options: any) => {
       if (!(error.name === "AbortError")) {
         setError(error);
         setLoading(false);
-        setRefresh((loading: boolean) => refreshFetch);
+        //setRefresh(refreshFetch);
       }
     }
   };
