@@ -5,125 +5,91 @@
 import React from "react";
 import { useNonInitialMountEffect } from '../hooks';
 
-const useFetch = (url: string, options?: any) => {
+interface IOptions extends RequestInit {
+    timeout?: number | boolean;
+    onTimeout?: () => void;
+}
+const useFetch = (url: string, options?: IOptions) => {
 
-  //if hold is set to true useFetch will not fire (good for preventing premature firing)
-  const hold = options?.hold;
-
-  //if option set to false useFetch will not fire on initial mount
-  const initialMount = (options?.initialMount === false) ? false : true;
-
-  //toggled refresh state that triggers a new fetch request
-  const [refreshDataState, setRefreshDataState] = React.useState([]);
-
-  //returned response object state
-  const [response, setResponse] = React.useState<{ data: { [key: string]: any } }>({ data: { Result: [] } });
-
-  //returned loading state object (changes to true when response resolves)
-  const [loading, setLoading] = React.useState((initialMount === false) ? false : true);
-
-  //returned error object state
-  const [error, setError] = React.useState(null);
-
-  //test resolve
-  const [resolve, setResolve] = React.useState<Promise<Response>>();
-
-  //check for 401 errors (authentication)
-  const [isAuth, setIsAuth] = React.useState<boolean | undefined>(undefined);
-
-  //refresh method for refetching data without having to set state.
-  const refresh = (loading?: boolean) => {
-    if (!loading) {
-      setRefreshDataState([]);
-    }
-  };
-
-  //returns refresh method
-  //const [refresh] = React.useState(() => reFetch);
-
-  //fetch data
-  const fetchData = async (signal: any, method?: any) => {
-    try {
-      setLoading(true);
-
-      const fetchMethod = fetch(url, {
-        ...options,
-        signal: signal,
-        method: method || options?.method,
-        body: JSON.stringify(options?.body),
-      });
-
-      setResolve(fetchMethod);
-
-      const res = await fetchMethod;
-      const json = await res.json();
-
-      if (res.ok) {
-        (res as any).data = {};
-        //assigns json res
-        (res as any).data = json;
-        //set returned state objects
-        setResponse(res as any);
-        setError(null);
-        setLoading(false);
-        setIsAuth(true);
-        //setRefresh(refreshFetch);
-      }
-      else if (res?.status === 401) {
-        setIsAuth(false);
-      }
-    } catch (error) {
-
-      if (!(error.name === "AbortError")) {
-        setError(error);
-        setLoading(false);
-        //setRefresh(refreshFetch);
-      }
-    }
-  };
-
-  //test post method
-  //const [post, setPost] = React.useState(() => alert('foo'));
-
-  //makes sure useFetch can react to state changes to options.trigger or url not on initial mount
-  useNonInitialMountEffect(() => {
-    //creates AbortController to cancel all subscriptions in case comp unmounts before fetch finishes
-    const abortController = new AbortController();
-    const signal = abortController.signal;
-    if (!hold) {
-      fetchData(signal);
-    }
-    //return cleanup function when comp unmounts
-    return function cleanup() {
-      abortController.abort();
+    const { method: _method, body, timeout, onTimeout, ..._options } = {
+        method: 'Get',
+        body: {},
+        timeout: (options?.timeout !== undefined) ? options.timeout : 20000,
+        onTimeout: () => null,
+        ...options
     };
-  }, [...options?.trigger || [], url, refreshDataState, hold]);
 
-  //fetches data on initial mount
-  React.useEffect(() => {
-    if (!(initialMount === false)) {
-      //creates AbortController to cancel all subscriptions in case comp unmounts before fetch finishes
-      const abortController = new AbortController();
-      const signal = abortController.signal;
+    const [triggerResetState, setTriggerResetState] = React.useState([]);
+    const [triggerFetch, setTriggerFetch] = React.useState([]);
+    const [mainURL, setMainUrl] = React.useState(url);
+    const [method, setMethod] = React.useState(_method);
+    const [response, setResponse] = React.useState<Response | { data: any[] }>({ data: [] });
+    const [error, setError] = React.useState<object | string | null>(null);
+    const [loading, setLoading] = React.useState(false);
+    const [abortController, setAbortController] = React.useState<AbortController>(new AbortController());
+    const get = () => setTriggerFetch([]);
+    // const post = () => {
+    //     setMethod('POST');
+    // };
+    const abort = () => abortController.abort();
+    const reset = () => setTriggerResetState([]);
 
-      if (!hold) {
-        fetchData(signal);
-      }
-      //return cleanup function when comp unmounts
-      return function cleanup() {
-        abortController.abort();
-      };
+    const getFetch = async (signal?: AbortSignal | null) => {
+
+        try {
+            setLoading(true);
+            const jsFetch = fetch(url, {
+                ...options,
+                method: method,
+                signal: signal,
+                body: JSON.stringify(options?.body)
+            });
+            let res = await jsFetch;
+            const json = await res.json();
+
+            if (res.ok) {
+                setResponse(json);
+                setError(null);
+                setLoading(false);
+            }
+        }
+        catch (error) {
+            setError(error as any);
+            setLoading(false);
+        }
+
     }
-  }, []);
 
-  return {
-    response,
-    error,
-    loading,
-    refresh,
-    resolve,
-    isAuth
-  };
+    useNonInitialMountEffect(() => {
+        abort();
+        setResponse({ data: [] });
+        setLoading(false);
+        setError(null);
+    }, [triggerResetState]);
+
+    useNonInitialMountEffect(() => {
+        const abortInstance = new AbortController();
+        setAbortController(abortInstance);
+        getFetch(abortInstance.signal);
+        if (typeof timeout === 'number') {
+            setTimeout(() => {
+                abortInstance.abort();
+                onTimeout();
+            }, timeout);
+        }
+        return function cleanup() {
+            abortInstance.abort();
+        };
+    }, [triggerFetch]);
+
+    return {
+        response,
+        error,
+        loading,
+        get,
+        abort,
+        reset
+    };
 };
 
 export default useFetch;
