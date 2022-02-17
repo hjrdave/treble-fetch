@@ -4,24 +4,9 @@
 */
 import React from "react";
 import { useNonInitialMountEffect } from '../hooks';
+import { TrebleFetch } from "../interfaces";
 
-export interface IOptions {
-    method?: 'GET' | 'POST' | 'DELETE' | 'PUT' | 'PATCH' | string;
-    headers?: HeadersInit;
-    body?: { [key: string]: any };
-    timeout?: number | boolean;
-    onTimeout?: () => void;
-    cache?: RequestCache;
-    credentials?: RequestCredentials;
-    integrity?: string;
-    keepalive?: boolean;
-    mode?: RequestMode;
-    redirect?: RequestRedirect;
-    referrer?: string;
-    referrerPolicy?: ReferrerPolicy;
-    window?: null;
-}
-const useFetch = (url: RequestInfo, options?: IOptions) => {
+const useFetch = (url: RequestInfo, options?: TrebleFetch.FetchOptions) => {
 
     const [method, setMethod] = React.useState((options?.method) ? options.method : 'GET');
     const [body, setBody] = React.useState(options?.body);
