@@ -65,7 +65,6 @@
     "vsts": "^2.1.2"
   },
   "dependencies": {
-    "@types/react": "^17.0.39",
-    "uniqid": "^5.2.0"
+    "@types/react": "^17.0.39"
   }
 }
