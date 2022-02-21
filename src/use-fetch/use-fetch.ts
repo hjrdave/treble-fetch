@@ -24,6 +24,13 @@ export default function useFetch<R = Response>(url: RequestInfo, options?: Trebl
     const [abortController, setAbortController] = React.useState<AbortController>(new AbortController());
     const onTimeout = () => (options?.onTimeout) ? options.onTimeout() : null;
 
+    const fetchData = () => {
+        setMethod((options?.method) ? options?.method : 'GET');
+        setRouteURL('');
+        setBody(options?.body);
+        setTriggerFetch([]);
+    }
+
     const get = (route?: string) => {
         setMethod('GET')
         setRouteURL((route) ? route : '');
@@ -97,6 +104,7 @@ export default function useFetch<R = Response>(url: RequestInfo, options?: Trebl
         response,
         error,
         loading,
+        fetchData,
         get,
         post,
         abort,
