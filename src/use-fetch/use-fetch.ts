@@ -23,6 +23,23 @@ export default function useFetch<R = Response | undefined>(url: RequestInfo, opt
     const [abortController, setAbortController] = React.useState<AbortController>(new AbortController());
     const onTimeout = () => (options?.onTimeout) ? options.onTimeout() : null;
 
+    const _fetch = async (params: { route?: string, body?: any, method?: string }) => {
+        const data = fetch(`${mainURL}${(params.route) ? params.route : ''}`, {
+            ...options,
+            method: params?.method,
+            body: JSON.stringify(params?.body),
+            headers: headers
+        });
+        let res = await data;
+        const json = await res.json();
+        return json;
+    }
+
+    const request = {
+        get: (route?: string) => _fetch({ route: route, method: 'GET' }),
+        post: (route?: string, body?: any) => _fetch({ route: route, method: 'POST', body: body })
+    }
+
     const reset = (setRouteTo?: string) => {
         abort();
         setMethod((options?.method) ? options?.method : 'GET');
@@ -139,6 +156,7 @@ export default function useFetch<R = Response | undefined>(url: RequestInfo, opt
         fetchData,
         get,
         post,
-        abort
+        abort,
+        request
     };
 };
