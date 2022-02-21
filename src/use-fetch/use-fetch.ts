@@ -6,7 +6,9 @@ import React from "react";
 import { useNonInitialMountEffect } from '../hooks';
 import { TrebleFetch } from "../interfaces";
 
-const useFetch = (url: RequestInfo, options?: TrebleFetch.FetchOptions) => {
+
+
+export default function useFetch<R = Response>(url: RequestInfo, options?: TrebleFetch.FetchOptions) {
 
     const [method, setMethod] = React.useState((options?.method) ? options.method : 'GET');
     const [body, setBody] = React.useState(options?.body);
@@ -16,7 +18,7 @@ const useFetch = (url: RequestInfo, options?: TrebleFetch.FetchOptions) => {
     const [triggerFetch, setTriggerFetch] = React.useState([]);
     const [mainURL, setMainURL] = React.useState(url);
     const [routeURL, setRouteURL] = React.useState('');
-    const [response, setResponse] = React.useState<Response | { data: any[] }>({ data: [] });
+    const [response, setResponse] = React.useState<R | undefined>();
     const [error, setError] = React.useState<object | string | null>(null);
     const [loading, setLoading] = React.useState(false);
     const [abortController, setAbortController] = React.useState<AbortController>(new AbortController());
@@ -66,7 +68,7 @@ const useFetch = (url: RequestInfo, options?: TrebleFetch.FetchOptions) => {
 
     useNonInitialMountEffect(() => {
         abort();
-        setResponse({ data: [] });
+        setResponse(undefined);
         setLoading(false);
         setError(null);
     }, [triggerResetState]);
@@ -101,5 +103,3 @@ const useFetch = (url: RequestInfo, options?: TrebleFetch.FetchOptions) => {
         reset
     };
 };
-
-export default useFetch;

@@ -1,5 +1,4 @@
 export declare namespace TrebleFetch {
-
     export interface FetchOptions {
         method?: 'GET' | 'POST' | 'DELETE' | 'PUT' | 'PATCH' | string;
         headers?: HeadersInit;
