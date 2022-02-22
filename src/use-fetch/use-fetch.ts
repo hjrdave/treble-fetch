@@ -10,8 +10,27 @@ import { TrebleFetch } from "../interfaces";
 
 export default function useFetch<R = Response | undefined>(url: RequestInfo, options?: TrebleFetch.FetchOptions<R>) {
 
+    const processRes = (res: Response, bodyType: TrebleFetch.BodyType) => {
+        const resBody = {
+            ['arrayBuffer']: () => res.arrayBuffer(),
+            ['blob']: () => res.blob(),
+            ['formData']: () => res.formData(),
+            ['json']: () => res.json(),
+            ['text']: () => res.text()
+        }
+        return resBody[(bodyType) ? bodyType : 'json']();
+    }
+
+    const parseBody = (body: any, type?: TrebleFetch.BodyType) => {
+        if (type === 'json' || type === undefined) {
+            const bodyData = JSON.stringify(body)
+            return bodyData;
+        };
+        return body;
+    }
+
     const [method, setMethod] = React.useState((options?.method) ? options.method : 'GET');
-    const [body, setBody] = React.useState(options?.body);
+    const [body, setBody] = React.useState<BodyInit | { [key: string]: string } | undefined>(parseBody(options?.body, options?.bodyType));
     const [headers, setHeaders] = React.useState(options?.headers);
     const [fetchTimeout] = React.useState((options?.timeout !== undefined) ? options.timeout : 20000);
     const [triggerFetch, setTriggerFetch] = React.useState([]);
@@ -23,28 +42,36 @@ export default function useFetch<R = Response | undefined>(url: RequestInfo, opt
     const [abortController, setAbortController] = React.useState<AbortController>(new AbortController());
     const onTimeout = () => (options?.onTimeout) ? options.onTimeout() : null;
 
-    const _fetch = async (params: { route?: string, body?: any, method?: string }) => {
+    const _fetch = async (params: { route?: string, body?: any, method?: string, signal?: AbortSignal | null, bodyType?: TrebleFetch.BodyType }) => {
         const data = fetch(`${mainURL}${(params.route) ? params.route : ''}`, {
             ...options,
+            signal: params?.signal,
             method: params?.method,
-            body: JSON.stringify(params?.body),
+            body: (params?.bodyType === 'json' || params?.bodyType === undefined) ? JSON.stringify(params?.body) : params?.body,
             headers: headers
         });
-        let res = await data;
-        const json = await res.json();
-        return json;
+        const res = await data;
+        return res;
     }
 
     const request = {
-        get: (route?: string) => _fetch({ route: route, method: 'GET' }),
-        post: (route?: string, body?: any) => _fetch({ route: route, method: 'POST', body: body })
+        get: async (route?: string, options?: { bodyType: TrebleFetch.BodyType }) => {
+            const res = await _fetch({ route: route, method: 'GET' });
+            const processedRes = await processRes(res, (options?.bodyType) ? options.bodyType : 'json');
+            return processedRes;
+        },
+        post: async (route?: string, body?: any, options?: { bodyType: TrebleFetch.BodyType }) => {
+            const res = await _fetch({ route: route, method: 'POST', body: body });
+            const processedRes = await processRes(res, (options?.bodyType) ? options.bodyType : 'json');
+            return processedRes;
+        }
     }
 
     const reset = (setRouteTo?: string) => {
         abort();
         setMethod((options?.method) ? options?.method : 'GET');
         setRouteURL((setRouteTo) ? setRouteTo : '');
-        setBody(options?.body);
+        setBody(parseBody(options?.body, options?.bodyType));
     };
 
     const fetchData = () => {
@@ -56,14 +83,14 @@ export default function useFetch<R = Response | undefined>(url: RequestInfo, opt
         abort();
         setMethod('GET')
         setRouteURL((route) ? route : '');
-        setBody(options?.body);
+        setBody(parseBody(options?.body, options?.bodyType));
         setTriggerFetch([]);
     };
     const post = (route: string, body: { [key: string]: any }) => {
         abort();
         setMethod('POST');
         setRouteURL(route);
-        setBody(body);
+        setBody(parseBody(options?.body, options?.bodyType));
         setTriggerFetch([]);
     };
 
@@ -82,23 +109,15 @@ export default function useFetch<R = Response | undefined>(url: RequestInfo, opt
 
         try {
             setLoading(true);
-            setResponse(options?.defaultRes as R);
             setError(null);
-            const jsFetch = fetch(`${mainURL}${routeURL}`, {
-                ...options,
-                method: method,
-                signal: signal,
-                body: JSON.stringify(body),
-                headers: headers
-            });
-            let res = await jsFetch;
-            const json = await res.json();
+
+            const res = await _fetch({ route: routeURL, method: method, signal: signal, body: body, bodyType: options?.bodyType });
+            const processedRes = await processRes(res, (options?.bodyType) ? options.bodyType : 'json');
 
             if (res.ok) {
-                setResponse(modelResponseData(json) as R);
+                setResponse(modelResponseData(processedRes) as R);
                 setLoading(false);
             } else if (res.ok === false) {
-                console.log(res);
                 setLoading(false);
                 if (res?.statusText.length > 0) {
                     setError(res?.statusText);
@@ -134,7 +153,7 @@ export default function useFetch<R = Response | undefined>(url: RequestInfo, opt
 
     useNonInitialMountEffect(() => {
         setHeaders(options?.headers);
-        setBody(options?.body);
+        setBody(parseBody(options?.body, options?.bodyType));
     }, [options?.body, options?.headers]);
 
     React.useEffect(() => {

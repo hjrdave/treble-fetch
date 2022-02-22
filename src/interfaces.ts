@@ -2,7 +2,8 @@ export declare namespace TrebleFetch {
     export interface FetchOptions<R> {
         method?: 'GET' | 'POST' | 'DELETE' | 'PUT' | 'PATCH' | string;
         headers?: HeadersInit | { [key: string]: any };
-        body?: { [key: string]: any };
+        body?: BodyInit | { [key: string]: any };
+        bodyType?: BodyType;
         timeout?: number | boolean;
         onTimeout?: () => void;
         defaultRes?: R;
@@ -22,4 +23,6 @@ export declare namespace TrebleFetch {
         referrerPolicy?: ReferrerPolicy;
         window?: null;
     }
+
+    export type BodyType = 'arrayBuffer' | 'blob' | 'formData' | 'json' | 'text';
 }
