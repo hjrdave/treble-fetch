@@ -90,7 +90,7 @@ export default function useFetch<R = Response | undefined>(url: RequestInfo, opt
         abort();
         setMethod('POST');
         setRouteURL(route);
-        setBody(parseBody(options?.body, options?.bodyType));
+        setBody(parseBody((body) ? body : options?.body, options?.bodyType));
         setTriggerFetch([]);
     };
 
