@@ -86,7 +86,7 @@ export default function useFetch<R = Response | undefined>(url: RequestInfo, opt
         setBody(parseBody(options?.body, options?.bodyType));
         setTriggerFetch([]);
     };
-    const post = (route: string, body: { [key: string]: any }) => {
+    const post = (route: string, body?: { [key: string]: any }) => {
         abort();
         setMethod('POST');
         setRouteURL(route);
