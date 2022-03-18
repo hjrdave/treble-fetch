@@ -47,7 +47,7 @@ export default function useFetch<R = Response | undefined>(url: RequestInfo, opt
             ...options,
             signal: params?.signal,
             method: params?.method,
-            body: (params?.bodyType === 'json' || params?.bodyType === undefined) ? JSON.stringify(params?.body) : params?.body,
+            body: params?.body,
             headers: headers
         });
         const res = await data;
