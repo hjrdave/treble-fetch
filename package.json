@@ -1,6 +1,6 @@
 {
   "name": "treble-fetch",
-  "version": "1.0.0-beta.16",
+  "version": "1.0.0-beta.17",
   "description": "Fetching, Prefetching, and Cache Extension for Treble Global State Management Library",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
