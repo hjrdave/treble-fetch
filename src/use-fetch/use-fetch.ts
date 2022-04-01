@@ -56,7 +56,7 @@ export default function useFetch<R = Response | undefined>(url: RequestInfo, opt
         return res;
     }
 
-    //event with interceptor
+    //event with interceptor (this is experimental)
     const fetchEvent = async (params: { route?: string, body?: any, method?: string, signal?: AbortSignal | null, bodyType?: TrebleFetch.BodyType }) => {
         if (interceptor) {
             await interceptor(url, options);
