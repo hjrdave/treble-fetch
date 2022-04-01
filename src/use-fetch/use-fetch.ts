@@ -29,6 +29,7 @@ export default function useFetch<R = Response | undefined>(url: RequestInfo, opt
         return body;
     }
 
+    const [interceptor] = React.useState(() => options?.interceptor);
     const [method, setMethod] = React.useState((options?.method) ? options.method : 'GET');
     const [body, setBody] = React.useState<BodyInit | { [key: string]: string } | undefined>(parseBody(options?.body, options?.bodyType));
     const [headers, setHeaders] = React.useState(options?.headers);
@@ -42,6 +43,7 @@ export default function useFetch<R = Response | undefined>(url: RequestInfo, opt
     const [abortController, setAbortController] = React.useState<AbortController>(new AbortController());
     const onTimeout = () => (options?.onTimeout) ? options.onTimeout() : null;
 
+    //js fetch request
     const _fetch = async (params: { route?: string, body?: any, method?: string, signal?: AbortSignal | null, bodyType?: TrebleFetch.BodyType }) => {
         const data = fetch(`${mainURL}${(params.route) ? params.route : ''}`, {
             ...options,
@@ -54,14 +56,23 @@ export default function useFetch<R = Response | undefined>(url: RequestInfo, opt
         return res;
     }
 
+    //event with interceptor
+    const fetchEvent = async (params: { route?: string, body?: any, method?: string, signal?: AbortSignal | null, bodyType?: TrebleFetch.BodyType }) => {
+        if (interceptor) {
+            await interceptor(url, options);
+            return (_fetch(params));
+        }
+        return (_fetch(params));
+    }
+
     const request = {
         get: async (route?: string, options?: { bodyType: TrebleFetch.BodyType }) => {
-            const res = await _fetch({ route: route, method: 'GET' });
+            const res = await fetchEvent({ route: route, method: 'GET' });
             const processedRes = await processRes(res, (options?.bodyType) ? options.bodyType : 'json');
             return processedRes;
         },
         post: async (route?: string, body?: any, options?: { bodyType: TrebleFetch.BodyType }) => {
-            const res = await _fetch({ route: route, method: 'POST', body: body });
+            const res = await fetchEvent({ route: route, method: 'POST', body: body });
             const processedRes = await processRes(res, (options?.bodyType) ? options.bodyType : 'json');
             return processedRes;
         }
@@ -111,7 +122,7 @@ export default function useFetch<R = Response | undefined>(url: RequestInfo, opt
             setLoading(true);
             setError(null);
 
-            const res = await _fetch({ route: routeURL, method: method, signal: signal, body: body, bodyType: options?.bodyType });
+            const res = await fetchEvent({ route: routeURL, method: method, signal: signal, body: body, bodyType: options?.bodyType });
             const processedRes = await processRes(res, (options?.bodyType) ? options.bodyType : 'json');
 
             if (res.ok) {
@@ -129,6 +140,7 @@ export default function useFetch<R = Response | undefined>(url: RequestInfo, opt
         catch (error) {
             setError(error as any);
             setLoading(false);
+            console.error(error);
         }
     }
 
