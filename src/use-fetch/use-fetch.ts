@@ -33,6 +33,7 @@ export default function useFetch<R = Response | undefined>(url: RequestInfo, opt
     const [method, setMethod] = React.useState((options?.method) ? options.method : 'GET');
     const [body, setBody] = React.useState<BodyInit | { [key: string]: string } | undefined>(parseBody(options?.body, options?.bodyType));
     const [headers, setHeaders] = React.useState(options?.headers);
+    const [postHeaders] = React.useState((headers) ? Object.fromEntries(Object.entries(headers)?.filter(([k, v]) => k !== 'Content-Type')) : headers);
     const [fetchTimeout] = React.useState((options?.timeout !== undefined) ? options.timeout : 20000);
     const [triggerFetch, setTriggerFetch] = React.useState([]);
     const [mainURL, setMainURL] = React.useState(url);
@@ -45,12 +46,16 @@ export default function useFetch<R = Response | undefined>(url: RequestInfo, opt
 
     //js fetch request
     const _fetch = async (params: { route?: string, body?: any, method?: string, signal?: AbortSignal | null, bodyType?: TrebleFetch.BodyType }) => {
+        //Content Type needs stripped out of headers when doing post requests
+        console.log(params?.method);
+        const fetchHeaders = (params?.method === 'POST') ? postHeaders : headers;
+        console.log(fetchHeaders);
         const data = fetch(`${mainURL}${(params.route) ? params.route : ''}`, {
             ...options,
             signal: params?.signal,
             method: params?.method,
             body: params?.body,
-            headers: headers
+            headers: fetchHeaders
         });
         const res = await data;
         return res;
