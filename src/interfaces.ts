@@ -2,7 +2,7 @@ export declare namespace TrebleFetch {
 
     export interface JSFetchOptions {
         method?: 'GET' | 'POST' | 'DELETE' | 'PUT' | 'PATCH' | string;
-        headers?: HeadersInit | { [key: string]: any };
+        headers?: Headers
         body?: BodyInit | { [key: string]: any };
         cache?: RequestCache;
         credentials?: RequestCredentials;
@@ -16,9 +16,7 @@ export declare namespace TrebleFetch {
     }
     export interface FetchOptions<R = Response> extends JSFetchOptions {
         responseType?: ResponseType;
-        //timeout?: number | boolean;
-        disableBodySerialize?: boolean;
-        //onTimeout?: () => void;
+        bodyType?: BodyType;
         defaultRes?: R;
         mapResDataTo?: string;
         modelResData?: (response: R) => ({
@@ -26,15 +24,34 @@ export declare namespace TrebleFetch {
         }[]);
         fetchOnMount?: boolean | string;
         onMount?: () => void;
-        //interceptor?: (url: RequestInfo, options?: TrebleFetch.FetchOptions<R>) => Promise<any>;
         token?: string;
+        // interceptors?: {
+        //     request?: (params: { url: RequestInfo, options?: TrebleFetch.FetchOptions<Response> }) => Promise<Response>;
+        //     response?: (params: { response: Response }) => Promise<Response>;
+        // }
     }
 
-    export interface RequestOptions {
+    export interface SendRequestOptions extends JSFetchOptions {
+        baseUrl?: string | Request;
+        requestUrl?: string | Request;
+        body?: any;
+        method?: string;
+        abortController: AbortController;
+        headers?: Headers;
+        bodyType?: BodyType;
         responseType?: ResponseType;
-        headers?: HeadersInit | { [key: string]: any };
-        disableBodySerialize?: boolean;
+    }
+    export interface PostOptions {
+        headers?: Headers
+        bodyType?: BodyType;
+        responseType?: ResponseType;
+    }
+    export interface GetOptions {
+        headers?: Headers
+        responseType?: ResponseType;
     }
 
-    export type ResponseType = 'arrayBuffer' | 'blob' | 'formData' | 'json' | 'text' | 'raw';
+    export type ResponseType = 'json' | 'text' | 'formData' | 'blob' | 'arrayBuffer' | 'raw';
+    export type BodyType = 'json' | 'text' | 'formData' | 'urlSearchParams' | 'blob' | 'arrayBuffer' | 'raw';
+    export type Headers = HeadersInit | { [key: string]: any };
 }

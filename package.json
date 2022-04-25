@@ -67,5 +67,8 @@
   },
   "dependencies": {
     "@types/react": "^17.0.39"
+  },
+  "peerDependencies": {
+    "treble-gsm": "^4.0.0"
   }
 }

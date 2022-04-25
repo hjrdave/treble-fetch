@@ -16,14 +16,14 @@ interface Params {
 const fetchRequest = async ({ baseUrl, requestUrl, body, method, headers, timeout, abortController, onTimeout, disableBodySerialize, options }: Params) => {
 
     //starts timeout timer
-    const requestTimer = setTimeout(() => {
-        if (typeof timeout === 'number') {
-            abortController.abort();
-            if (onTimeout) {
-                onTimeout();
-            }
-        }
-    }, (typeof timeout === 'number') ? timeout : 0);
+    // const requestTimer = setTimeout(() => {
+    //     if (typeof timeout === 'number') {
+    //         abortController.abort();
+    //         if (onTimeout) {
+    //             onTimeout();
+    //         }
+    //     }
+    // }, (typeof timeout === 'number') ? timeout : 0);
 
     //fetch data from API
     const data = fetch(`${baseUrl}${(requestUrl) ? requestUrl : ''}`, {
@@ -36,7 +36,7 @@ const fetchRequest = async ({ baseUrl, requestUrl, body, method, headers, timeou
     const res = await data;
 
     //clear timeout if fetch succeeds before max time alotted
-    clearTimeout(requestTimer);
+    //clearTimeout(requestTimer);
 
     return res;
 }
