@@ -1,6 +1,9 @@
 import { TrebleFetch } from "./interfaces";
 
-const extractRes = async (res: Response, responseType?: TrebleFetch.ResponseType) => {
+interface IExtractRes {
+    (res: Response, responseType?: TrebleFetch.ResponseType): Promise<Response | FormData | Blob | ArrayBuffer | string>
+}
+const extractRes: IExtractRes = async (res, responseType) => {
     const fallbackRes = res.clone();
     try {
         if (responseType) {

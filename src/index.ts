@@ -1,6 +1,6 @@
 import useFetch from './use-fetch';
 import lazyImport from './lazy-import';
-import prefetch from './prefetch';
+import { request, get, post } from './request';
 import extractRes from './extract-res';
 import serializeBody from './serialize-body';
 import setContentType from './set-content-type';
@@ -11,7 +11,12 @@ export type { TrebleFetch };
 const trebleFetch = {
     extractRes,
     serializeBody,
-    setContentType
+    setContentType,
+    request,
+    get,
+    post,
+    useFetch,
+    lazyImport
 }
+export { useFetch, lazyImport };
 export default trebleFetch;
-export { useFetch, lazyImport, prefetch };

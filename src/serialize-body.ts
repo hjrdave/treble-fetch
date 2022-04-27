@@ -1,6 +1,6 @@
 import { TrebleFetch } from './interfaces';
 
-const serializeBody = (body: BodyInit | null | undefined, bodyType?: TrebleFetch.BodyType) => {
+const serializeBody = (body?: BodyInit | { [key: string]: any }, bodyType?: TrebleFetch.BodyType) => {
     try {
         if (bodyType === 'json') {
             return JSON.stringify(body);

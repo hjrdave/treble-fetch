@@ -5,10 +5,10 @@
 
 import React from 'react';
 
-interface ILazyImport{
+export interface ILazyImport {
     (
         importStatement: () => Promise<{ default: React.ComponentType<any> }>
-    ):React.LazyExoticComponent<any>
+    ): React.LazyExoticComponent<any>
 }
 
 const lazyImport: ILazyImport = (importStatement) => {
