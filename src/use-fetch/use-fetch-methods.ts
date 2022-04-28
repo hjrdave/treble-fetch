@@ -135,7 +135,7 @@ export default function useFetchMethods<R = Response | undefined>(url: RequestIn
     }
 
     //async get method
-    const getRequest = (url: string, options: TrebleFetch.GetOptions) => {
+    const getRequest = (url: string, options?: TrebleFetch.GetOptions) => {
         const { body: initBody, ...hookOptions } = initOptions;
         const requestOptions = {
             ...hookOptions,

@@ -13,7 +13,7 @@ export default function useFetch<R = Response>(url: RequestInfo, options?: Trebl
 
     //request methods for making async requests
     const request = {
-        get: async (url: string, options: TrebleFetch.GetOptions) => getRequest(url, options),
+        get: async (url: string, options?: TrebleFetch.GetOptions) => getRequest(url, options),
         post: async (url: string, body?: BodyInit | { [key: string]: any }, options?: TrebleFetch.PostOptions) => postRequest(url, body, options)
     }
 
