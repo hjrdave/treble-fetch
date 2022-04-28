@@ -1,10 +1,15 @@
 export declare namespace TrebleFetch {
 
+    export type Body = BodyInit | { [key: string]: any };
+    export type Headers = HeadersInit | { [key: string]: any };
+    export type ResponseType = 'json' | 'text' | 'formData' | 'blob' | 'arrayBuffer' | 'raw';
+    export type BodyType = 'json' | 'text' | 'formData' | 'urlSearchParams' | 'blob' | 'arrayBuffer' | 'raw';
+
     //Native JS Fetch options
     export interface JSFetchOptions {
         method?: 'GET' | 'POST' | 'DELETE' | 'PUT' | 'PATCH' | string;
         headers?: Headers
-        body?: BodyInit | { [key: string]: any };
+        body?: Body;
         cache?: RequestCache;
         credentials?: RequestCredentials;
         integrity?: string;
@@ -66,10 +71,12 @@ export declare namespace TrebleFetch {
         referrerPolicy?: ReferrerPolicy;
         window?: null;
         token?: string;
+        responseType?: ResponseType;
+        bodyType?: BodyType;
     }
 
-    //Everything under this needs refactored
-    export interface FetchOptions<R = Response> extends JSFetchOptions {
+    //useFetch Hook Options
+    export interface UseFetchOptions<R = Response> extends JSFetchOptions {
         responseType?: ResponseType;
         bodyType?: BodyType;
         defaultRes?: R;
@@ -81,19 +88,4 @@ export declare namespace TrebleFetch {
         onMount?: () => void;
         token?: string;
     }
-
-
-    export interface PostOptions {
-        headers?: Headers
-        bodyType?: BodyType;
-        responseType?: ResponseType;
-    }
-    // export interface GetOptions {
-    //     headers?: Headers
-    //     responseType?: ResponseType;
-    // }
-
-    export type ResponseType = 'json' | 'text' | 'formData' | 'blob' | 'arrayBuffer' | 'raw';
-    export type BodyType = 'json' | 'text' | 'formData' | 'urlSearchParams' | 'blob' | 'arrayBuffer' | 'raw';
-    export type Headers = HeadersInit | { [key: string]: any };
 }

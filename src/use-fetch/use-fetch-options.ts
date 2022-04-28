@@ -2,13 +2,10 @@ import React from 'react';
 import useNonInitialEffect from '../hooks/use-non-initial-mount-effect';
 import { TrebleFetch } from "../interfaces";
 
-export default function useOptions<R = Response | undefined>(url: RequestInfo, options?: TrebleFetch.FetchOptions<R>) {
+export default function useFetchOptions<R = Response | undefined>(url: RequestInfo, options?: TrebleFetch.UseFetchOptions<R>) {
 
     //initial useFetch options (when comp mounts)
-    const [initOptions] = React.useState(options);
-
-    //current useFetch options (this will change when state is updates)
-    const [currentOptions, setCurrentOptions] = React.useState(options);
+    const [initOptions] = React.useState((options) ? options : {});
 
     //sets whether or not hook will fetch on mount (can take an optional request url)
     const [fetchOnMount, setFetchOnMount] = React.useState<boolean | string>((initOptions?.fetchOnMount) ? initOptions.fetchOnMount : false);
@@ -18,6 +15,9 @@ export default function useOptions<R = Response | undefined>(url: RequestInfo, o
 
     //fetch body
     const [body, setBody] = React.useState<BodyInit | { [key: string]: string } | undefined>(initOptions?.body);
+
+    //the response type (allows for response parsing method to be statically set)
+    const [bodyType, setBodyType] = React.useState<TrebleFetch.BodyType>((options?.bodyType) ? options.bodyType : 'json');
 
     //fetch headers
     const [baseHeaders, setBaseHeaders] = React.useState(initOptions?.headers);
@@ -51,21 +51,6 @@ export default function useOptions<R = Response | undefined>(url: RequestInfo, o
 
     //allows for the canceling of fetch requests before resolve
     const [abortController, setAbortController] = React.useState<AbortController>(new AbortController());
-
-    //allows for res data to be modeled
-    const modelResponseData = (res: typeof response | { [key: string]: any }) => {
-        try {
-            if (initOptions?.modelResData && res) {
-                const mapResDataTo = (initOptions?.mapResDataTo) ? initOptions?.mapResDataTo : 'mappedResult';
-                const mappedData = initOptions.modelResData(res as any);
-                return { ...res, ...{ [mapResDataTo]: mappedData } };
-            }
-            return res;
-        } catch (error) {
-            console.error(error);
-        }
-        return res;
-    }
 
     /** Allows for useFetch options to be dynamic (Not all option props are dynamic, might change later)*/
     useNonInitialEffect(() => {
@@ -121,6 +106,8 @@ export default function useOptions<R = Response | undefined>(url: RequestInfo, o
         setMethod,
         body,
         setBody,
+        bodyType,
+        setBodyType,
         baseHeaders,
         setBaseHeaders,
         headers,
@@ -144,8 +131,6 @@ export default function useOptions<R = Response | undefined>(url: RequestInfo, o
         fetchOnMount,
         setFetchOnMount,
         initOptions,
-        currentOptions,
-        modelResponseData,
         responseType,
         setResponseType
     }
