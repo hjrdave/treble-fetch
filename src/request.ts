@@ -2,6 +2,7 @@ import serializeBody from './serialize-body';
 import { TrebleFetch } from './interfaces';
 import setContentType from './set-content-type';
 import extractRes from './extract-res';
+import createHeaders from './create-headers';
 
 //base fetch request used throughout library
 export const baseFetchRequest = async (options: TrebleFetch.BaseRequestOptions) => {
@@ -16,8 +17,7 @@ export const baseFetchRequest = async (options: TrebleFetch.BaseRequestOptions) 
             body: (method !== 'GET') ? serializeBody(body, bodyType) as any : undefined
         });
         const res = await data;
-        const extractedRes = extractRes(res, responseType);
-        return extractedRes;
+        return res;
     }
     catch (error) {
         console.error(`Treble Fetch: ${error}`);
@@ -25,10 +25,58 @@ export const baseFetchRequest = async (options: TrebleFetch.BaseRequestOptions) 
 }
 
 //Async generic request method
-export const request = (url: string, options: TrebleFetch.RequestOptions) => baseFetchRequest({ requestUrl: url, ...options });
+export const request = async (url: string, options: TrebleFetch.RequestOptions) => {
+    try {
+        const headers = createHeaders(options.token, options?.headers);
+        const requstOptions = {
+            ...options,
+            headers: headers,
+            requestUrl: url
+        }
+        const data = baseFetchRequest(requstOptions);
+        const res = await data;
+        const extractedRes = (res) ? extractRes(res, options.responseType) : res;
+        return extractedRes;
+    } catch (error) {
+        console.error(`Treble Fetch: ${error}`);
+    }
+};
 
 //Async GET request method
-export const get = async (url: string, options: TrebleFetch.GetOptions) => baseFetchRequest({ ...options, requestUrl: url, method: 'GET' });
+export const get = async (url: string, options: TrebleFetch.GetOptions) => {
+    try {
+        const headers = createHeaders(options.token, options?.headers);
+        const requstOptions = {
+            ...options,
+            headers: headers,
+            requestUrl: url,
+            method: 'GET'
+        }
+        const data = baseFetchRequest(requstOptions);
+        const res = await data;
+        const extractedRes = (res) ? extractRes(res, options.responseType) : res;
+        return extractedRes;
+    } catch (error) {
+
+    }
+};
 
 //Async POST request method
-export const post = async (url: string, body: BodyInit | { [key: string]: any }, options: TrebleFetch.PostOptions) => baseFetchRequest({ ...options, requestUrl: url, method: 'POST', body: body });
+export const post = async (url: string, body: BodyInit | { [key: string]: any }, options: TrebleFetch.PostOptions) => {
+    try {
+        const headers = createHeaders(options.token, options?.headers);
+        const requstOptions = {
+            ...options,
+            headers: headers,
+            requestUrl: url,
+            method: 'POST',
+            body: body
+        }
+        const data = baseFetchRequest(requstOptions);
+        const res = await data;
+        const extractedRes = (res) ? extractRes(res, options.responseType) : res;
+        return extractedRes;
+    } catch (error) {
+        console.error(`Treble Fetch: ${error}`);
+    }
+};

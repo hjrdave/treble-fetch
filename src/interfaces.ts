@@ -22,13 +22,15 @@ export declare namespace TrebleFetch {
         baseUrl?: string | Request;
         requestUrl?: string | Request;
         bodyType?: BodyType;
-        responseType?: ResponseType
+        responseType?: ResponseType;
     }
 
     //Async Request method options
     export interface RequestOptions extends JSFetchOptions {
         requestUrl?: string | Request;
         bodyType?: BodyType;
+        responseType?: ResponseType;
+        token?: string;
     }
 
     //Async GET method options
@@ -45,6 +47,8 @@ export declare namespace TrebleFetch {
         referrer?: string;
         referrerPolicy?: ReferrerPolicy;
         window?: null;
+        responseType?: ResponseType;
+        token?: string;
     }
 
     //Async POST method options
@@ -61,6 +65,7 @@ export declare namespace TrebleFetch {
         referrer?: string;
         referrerPolicy?: ReferrerPolicy;
         window?: null;
+        token?: string;
     }
 
     //Everything under this needs refactored

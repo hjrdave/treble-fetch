@@ -5,8 +5,9 @@
 import React from "react";
 import { useNonInitialMountEffect } from '../hooks';
 import useOptions from "./use-options";
-import extractData from "./extract-data";
-import fetchRequest from "./fetch-request";
+// import extractData from "./extract-data";
+// import fetchRequest from "./fetch-request";
+import { baseFetchRequest, get as getRequest, post as postRequest } from "../request";
 import { TrebleFetch } from "../interfaces";
 
 export default function useFetch<R = Response>(url: RequestInfo, options?: TrebleFetch.FetchOptions<R>) {
@@ -22,8 +23,6 @@ export default function useFetch<R = Response>(url: RequestInfo, options?: Trebl
         setToken,
         headers,
         setHeaders,
-        fetchTimeout,
-        setFetchTimeout,
         triggerFetch,
         setTriggerFetch,
         baseUrl,
@@ -38,102 +37,106 @@ export default function useFetch<R = Response>(url: RequestInfo, options?: Trebl
         setLoading,
         abortController,
         setAbortController,
-        onTimeout,
         initOptions,
         fetchOnMount,
         setFetchOnMount,
         modelResponseData,
         currentOptions,
-        responseType,
-        disableBodySerialize
+        responseType
     } = useOptions(url, options);
+
+    const fallBackBody = { msg: 'Treble Fetch: Fallback for when a body is left off of a POST request' };
 
     //request methods for making async requests
     const request = {
-        get: async (url?: string, options?: TrebleFetch.RequestOptions) => {
-            try {
-                const requestHeaders = (options?.headers && token) ? { ...options.headers, 'Authorization': token } : (options?.headers) ? { ...options.headers } : (token) ? { 'Authorization': token } : undefined;
-                const requestResponseType = (options?.responseType) ? options.responseType : responseType;
-                const requestDisableBodySerialize = (options?.disableBodySerialize) ? true : disableBodySerialize;
-                const res = await fetchRequest({ baseUrl: baseUrl, requestUrl: url, method: 'GET', headers: requestHeaders, abortController: abortController, timeout: fetchTimeout, onTimeout: onTimeout, disableBodySerialize: requestDisableBodySerialize, options: options });
-                const processedRes = await extractData(res, requestResponseType);
-                return processedRes;
-            } catch (error) {
-                console.error(`Treble Fetch: ${error}`);
+        get: async (url: string, options: TrebleFetch.GetOptions) => {
+            //const { body, ...hookOptions } = initOptions;
+            const hookOptions = {};
+            const requestOptions = {
+                ...hookOptions,
+                ...options,
+                requestUrl: `${baseUrl}${url}`,
+                token: (options?.token) ? options?.token : token,
+                headers: (options?.headers) ? { ...headers, ...options.headers } : headers,
+                responseType: (options?.responseType) ? options.responseType : responseType
             }
+            return getRequest(url, requestOptions);
         },
-        post: async (url?: string, body?: BodyInit | { [key: string]: any }, options?: TrebleFetch.RequestOptions) => {
-            try {
-                const requestHeaders = (options?.headers && token) ? { ...options.headers, 'Authorization': token } : (options?.headers) ? { ...options.headers } : (token) ? { 'Authorization': token } : undefined;
-                const requestResponseType = (options?.responseType) ? options.responseType : responseType;
-                const requestDisableBodySerialize = (options?.disableBodySerialize) ? true : disableBodySerialize;
-                const res = await fetchRequest({ baseUrl: baseUrl, requestUrl: url, method: 'POST', body: body, headers: requestHeaders, abortController: abortController, timeout: fetchTimeout, onTimeout: onTimeout, disableBodySerialize: requestDisableBodySerialize, options: options });
-                const processedRes = await extractData(res, requestResponseType);
-                return processedRes;
-            } catch (error) {
-                console.error(`Treble Fetch: ${error}`);
+        post: async (url: string, body?: BodyInit | { [key: string]: any }, options?: TrebleFetch.PostOptions) => {
+            const requestBody = (body) ? body : fallBackBody;
+            //const { body, ...hookOptions } = initOptions;
+            const hookOptions = {};
+            const requestOptions = {
+                ...hookOptions,
+                ...options,
+                requestUrl: `${baseUrl}${url}`,
+                token: (options?.token) ? options?.token : token,
+                headers: (options?.headers) ? { ...headers, ...options.headers } : headers,
+                responseType: (options?.responseType) ? options.responseType : responseType,
+                bodyType: (options?.bodyType) ? options.bodyType : bodyType
             }
+            return postRequest(url, requestBody, requestOptions);
         }
     }
 
     //resets useFetch options to original state
     const reset = (setRouteTo?: string) => {
-        try {
-            abort();
-            setMethod((initOptions?.method) ? initOptions?.method : 'GET');
-            setBaseUrl(url)
-            setRequestUrl((setRouteTo) ? setRouteTo : '');
-            setHeaders(initOptions?.headers);
-            setBody(initOptions?.body);
-        } catch (error) {
-            console.error(`Treble Fetch: ${error}`);
-        }
+        // try {
+        //     abort();
+        //     setMethod((initOptions?.method) ? initOptions?.method : 'GET');
+        //     setBaseUrl(url)
+        //     setRequestUrl((setRouteTo) ? setRouteTo : '');
+        //     setHeaders(initOptions?.headers);
+        //     setBody(initOptions?.body);
+        // } catch (error) {
+        //     console.error(`Treble Fetch: ${error}`);
+        // }
     };
 
     //triggers fetch request.
     const fetchData = (options?: { disableReset?: boolean }) => {
-        try {
-            if (!options?.disableReset) {
-                reset((typeof fetchOnMount === 'string') ? fetchOnMount : '');
-            };
-            setTriggerFetch([]);
-        } catch (error) {
-            console.error(`Treble Fetch: ${error}`);
-        }
+        // try {
+        //     if (!options?.disableReset) {
+        //         reset((typeof fetchOnMount === 'string') ? fetchOnMount : '');
+        //     };
+        //     setTriggerFetch([]);
+        // } catch (error) {
+        //     console.error(`Treble Fetch: ${error}`);
+        // }
     }
 
     //method for triggering GET fetch request
     const get = (requestUrl?: string, options?: { headers: HeadersInit }) => {
-        try {
-            abort();
-            setMethod('GET')
-            setRequestUrl((requestUrl) ? requestUrl : '');
-            setBody(initOptions?.body);
-            if (options?.headers) {
-                const requestHeaders = (options?.headers && token) ? { ...options.headers, 'Authorization': token } : { ...options.headers };
-                setHeaders(requestHeaders);
-            }
-            fetchData({ disableReset: true });
-        } catch (error) {
-            console.error(`Treble Fetch: ${error}`);
-        }
+        // try {
+        //     abort();
+        //     setMethod('GET')
+        //     setRequestUrl((requestUrl) ? requestUrl : '');
+        //     setBody(initOptions?.body);
+        //     if (options?.headers) {
+        //         const requestHeaders = (options?.headers && token) ? { ...options.headers, 'Authorization': token } : { ...options.headers };
+        //         setHeaders(requestHeaders);
+        //     }
+        //     fetchData({ disableReset: true });
+        // } catch (error) {
+        //     console.error(`Treble Fetch: ${error}`);
+        // }
     };
 
     //method for triggering POST fetch request
     const post = (requestUrl: string, body?: BodyInit | { [key: string]: any }, options?: { headers: HeadersInit }) => {
-        try {
-            abort();
-            setMethod('POST');
-            setRequestUrl(requestUrl);
-            setBody((body) ? body : initOptions?.body);
-            if (options?.headers) {
-                const requestHeaders = (options?.headers && token) ? { ...options.headers, 'Authorization': token } : { ...options.headers };
-                setHeaders(requestHeaders);
-            }
-            fetchData({ disableReset: true });
-        } catch (error) {
-            console.error(`Treble Fetch: ${error}`);
-        }
+        // try {
+        //     abort();
+        //     setMethod('POST');
+        //     setRequestUrl(requestUrl);
+        //     setBody((body) ? body : initOptions?.body);
+        //     if (options?.headers) {
+        //         const requestHeaders = (options?.headers && token) ? { ...options.headers, 'Authorization': token } : { ...options.headers };
+        //         setHeaders(requestHeaders);
+        //     }
+        //     fetchData({ disableReset: true });
+        // } catch (error) {
+        //     console.error(`Treble Fetch: ${error}`);
+        // }
     };
 
     //method to manually abort a fetch request
@@ -141,69 +144,64 @@ export default function useFetch<R = Response>(url: RequestInfo, options?: Trebl
 
     //handles fetch request and sets state
     const sendRequest = async (abortController: AbortController) => {
-        try {
-            setLoading(true);
-            setError(null);
-            const res = await fetchRequest({ baseUrl: baseUrl, requestUrl: requestUrl, method: method, abortController: abortController, timeout: fetchTimeout, onTimeout: onTimeout, body: body, disableBodySerialize: disableBodySerialize, options: initOptions });
-            const processedRes = await extractData(res, responseType);
-            if (res.ok) {
-                setResponse(modelResponseData(processedRes as any) as R);
-                setLoading(false);
-            } else if (res.ok === false) {
-                setLoading(false);
-                if (res?.statusText.length > 0) {
-                    setError(`Treble Fetch: ${res?.statusText}`);
-                } else {
-                    setError(`Treble Fetch: Server returned status ${res?.status}`);
-                }
-            }
-        }
-        catch (error) {
-            setError(error as any);
-            setLoading(false);
-            console.error(`Treble Fetch: ${error}`);
-        }
+        // try {
+        //     setLoading(true);
+        //     setError(null);
+        //     const res = await fetchRequest({ baseUrl: baseUrl, requestUrl: requestUrl, method: method, abortController: abortController, timeout: fetchTimeout, onTimeout: onTimeout, body: body, disableBodySerialize: disableBodySerialize, options: initOptions });
+        //     const processedRes = await extractData(res, responseType);
+        //     if (res.ok) {
+        //         setResponse(modelResponseData(processedRes as any) as R);
+        //         setLoading(false);
+        //     } else if (res.ok === false) {
+        //         setLoading(false);
+        //         if (res?.statusText.length > 0) {
+        //             setError(`Treble Fetch: ${res?.statusText}`);
+        //         } else {
+        //             setError(`Treble Fetch: Server returned status ${res?.status}`);
+        //         }
+        //     }
+        // }
+        // catch (error) {
+        //     setError(error as any);
+        //     setLoading(false);
+        //     console.error(`Treble Fetch: ${error}`);
+        // }
     }
 
     //triggers fetch request and aborts request if component unmounts
     useNonInitialMountEffect(() => {
-        try {
-            const abortInstance = new AbortController();
-            setAbortController(abortInstance);
-            sendRequest(abortInstance);
-            return function cleanup() {
-                abortInstance.abort();
-            };
-        } catch (error) {
-            console.error(`Treble Fetch: ${error}`);
-        }
+        // try {
+        //     const abortInstance = new AbortController();
+        //     setAbortController(abortInstance);
+        //     sendRequest(abortInstance);
+        //     return function cleanup() {
+        //         abortInstance.abort();
+        //     };
+        // } catch (error) {
+        //     console.error(`Treble Fetch: ${error}`);
+        // }
     }, [triggerFetch]);
 
     //
 
     //fires fetch request if fetchOnMount is set to true. (A string can be passed to set an initial request url)
     React.useEffect(() => {
-        try {
-            if (initOptions?.onMount) {
-                initOptions?.onMount();
-            }
-            console.log(fetchOnMount)
-            if (fetchOnMount) {
+        // try {
+        //     if (initOptions?.onMount) {
+        //         initOptions?.onMount();
+        //     }
+        //     console.log(fetchOnMount)
+        //     if (fetchOnMount) {
 
-                if (typeof fetchOnMount === 'string') {
-                    setRequestUrl(fetchOnMount);
-                }
-                fetchData();
-            }
-        } catch (error) {
-            console.error(`Treble Fetch: ${error}`);
-        }
+        //         if (typeof fetchOnMount === 'string') {
+        //             setRequestUrl(fetchOnMount);
+        //         }
+        //         fetchData();
+        //     }
+        // } catch (error) {
+        //     console.error(`Treble Fetch: ${error}`);
+        // }
     }, []);
-
-    React.useEffect(() => {
-        console.log(baseHeaders);
-        console.log(token);
-    }, [token, baseHeaders]);
 
     return {
         response,

@@ -28,9 +28,6 @@ export default function useOptions<R = Response | undefined>(url: RequestInfo, o
     //holds combined fetch headers and token
     const [headers, setHeaders] = React.useState((baseHeaders && token) ? { ...baseHeaders, 'Authorization': token } : (baseHeaders) ? { ...baseHeaders } : (token) ? { 'Authorization': token } : undefined);
 
-    //max time till fetch abort
-    const [fetchTimeout, setFetchTimeout] = React.useState(false);
-
     //generic state that triggers useEffect events
     const [triggerFetch, setTriggerFetch] = React.useState([]);
 
@@ -46,9 +43,6 @@ export default function useOptions<R = Response | undefined>(url: RequestInfo, o
     //the response type (allows for response parsing method to be statically set)
     const [responseType, setResponseType] = React.useState<TrebleFetch.ResponseType | undefined>(options?.responseType);
 
-    //disables body serialization just incase a custom solution is needed
-    const [disableBodySerialize, setDisableBodySerialize] = React.useState(options?.disableBodySerialize);
-
     //tracks fetch errors
     const [error, setError] = React.useState<object | string | null>(null);
 
@@ -57,16 +51,6 @@ export default function useOptions<R = Response | undefined>(url: RequestInfo, o
 
     //allows for the canceling of fetch requests before resolve
     const [abortController, setAbortController] = React.useState<AbortController>(new AbortController());
-
-    //shows error and fires custom function when fetch times out
-    const onTimeout = () => {
-        if (typeof fetchTimeout === 'number') {
-            // if (initOptions?.onTimeout) {
-            //     initOptions?.onTimeout();
-            // };
-            // console.error(`Treble Fetch: Request timed out at ${(fetchTimeout / 1000)} seconds.`);
-        }
-    };
 
     //allows for res data to be modeled
     const modelResponseData = (res: typeof response | { [key: string]: any }) => {
@@ -127,33 +111,10 @@ export default function useOptions<R = Response | undefined>(url: RequestInfo, o
     }, [options?.responseType]);
 
     useNonInitialEffect(() => {
-        if (options?.disableBodySerialize) {
-            setDisableBodySerialize(options.disableBodySerialize);
-        }
-    }, [options?.disableBodySerialize]);
-
-    // useNonInitialEffect(() => {
-    //     if (options?.timeout !== undefined) {
-    //         setFetchTimeout(options.timeout);
-    //     }
-    // }, [options?.timeout]);
-
-    useNonInitialEffect(() => {
         if (url) {
             setBaseUrl(url);
         }
     }, [url]);
-
-    // React.useEffect(() => {
-    //     setCurrentOptions({
-    //         ...options,
-    //         method: method,
-    //         body: body,
-    //         headers: headers,
-    //         token: token,
-    //         timeout: fetchTimeout
-    //     });
-    // }, [method, body, headers, token, fetchTimeout]);
 
     return {
         method,
@@ -164,8 +125,6 @@ export default function useOptions<R = Response | undefined>(url: RequestInfo, o
         setBaseHeaders,
         headers,
         setHeaders,
-        fetchTimeout,
-        setFetchTimeout,
         triggerFetch,
         setTriggerFetch,
         baseUrl,
@@ -180,7 +139,6 @@ export default function useOptions<R = Response | undefined>(url: RequestInfo, o
         setLoading,
         abortController,
         setAbortController,
-        onTimeout,
         token,
         setToken,
         fetchOnMount,
@@ -189,8 +147,6 @@ export default function useOptions<R = Response | undefined>(url: RequestInfo, o
         currentOptions,
         modelResponseData,
         responseType,
-        setResponseType,
-        disableBodySerialize,
-        setDisableBodySerialize
+        setResponseType
     }
 }
