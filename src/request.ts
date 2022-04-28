@@ -65,7 +65,7 @@ export const get = async (url: string, options: TrebleFetch.GetOptions) => {
 };
 
 //Async POST request method
-export const post = async (url: string, body: BodyInit | { [key: string]: any }, options: TrebleFetch.PostOptions) => {
+export const post = async (url: string, body: TrebleFetch.Body, options: TrebleFetch.PostOptions) => {
     try {
         const headers = createHeaders(options.token, options?.headers);
         const requstOptions = {
