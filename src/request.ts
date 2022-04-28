@@ -1,8 +1,11 @@
-import serializeBody from './serialize-body';
+/**
+ * Async Fetch Request methods
+ */
+import serializeBody from './fetch-helpers/serialize-body';
 import { TrebleFetch } from './interfaces';
-import setContentType from './set-content-type';
-import extractRes from './extract-res';
-import createHeaders from './create-headers';
+import setContentType from './fetch-helpers/set-content-type';
+import extractRes from './fetch-helpers/extract-res';
+import createHeaders from './fetch-helpers/create-headers';
 
 //base fetch request used throughout library
 export const baseFetchRequest = async (options: TrebleFetch.BaseRequestOptions) => {

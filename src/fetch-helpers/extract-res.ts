@@ -1,4 +1,8 @@
-import { TrebleFetch } from "./interfaces";
+/**
+ * Extracts Response object data based on specified response type. Default is json 
+ * */
+
+import { TrebleFetch } from "../interfaces";
 
 interface IExtractRes {
     (res: Response, responseType?: TrebleFetch.ResponseType): Promise<Response | FormData | Blob | ArrayBuffer | string>

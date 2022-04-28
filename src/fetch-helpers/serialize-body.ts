@@ -1,4 +1,8 @@
-import { TrebleFetch } from './interfaces';
+/**
+ * Serializes Body based on body type. Default is json 
+ * */
+
+import { TrebleFetch } from '../interfaces';
 
 const serializeBody = (body?: BodyInit | { [key: string]: any }, bodyType?: TrebleFetch.BodyType) => {
     try {

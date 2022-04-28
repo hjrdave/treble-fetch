@@ -7,7 +7,7 @@ import { useNonInitialMountEffect } from '../hooks';
 import useFetchMethods from "./use-fetch-methods";
 import { TrebleFetch } from "../interfaces";
 
-export default function useFetch<R = Response>(url: RequestInfo, options?: TrebleFetch.FetchOptions<R>) {
+export default function useFetch<R = Response>(url: RequestInfo, options?: TrebleFetch.UseFetchOptions<R>) {
 
     const { abort, modelResponseData, startRequest, onMount, reset, fetchData, setAbortController, getRequest, postRequest, managedStateRequest, triggerFetch, response, loading, error } = useFetchMethods(url, options);
 

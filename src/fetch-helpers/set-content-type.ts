@@ -1,6 +1,8 @@
-/**Explicitly sets content-type based on bodyType and then sets in headers */
+/**
+ * Explicitly sets content-type based on bodyType and then sets in headers 
+ * */
 
-import { TrebleFetch } from "./interfaces";
+import { TrebleFetch } from "../interfaces";
 
 const setContentType = (headers?: TrebleFetch.Headers, bodyType?: TrebleFetch.BodyType) => {
 

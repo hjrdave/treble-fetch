@@ -1,5 +1,8 @@
+/**
+ * Manages hook methods
+ */
 import useFetchOptions from "./use-fetch-options";
-import extractRes from "../extract-res";
+import extractRes from "../fetch-helpers/extract-res";
 import { get, post, baseFetchRequest } from '../request';
 import { TrebleFetch } from "../interfaces";
 

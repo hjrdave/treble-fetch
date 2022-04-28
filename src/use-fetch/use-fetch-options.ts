@@ -1,3 +1,6 @@
+/**
+ * Manages Hook Options
+ */
 import React from 'react';
 import useNonInitialEffect from '../hooks/use-non-initial-mount-effect';
 import { TrebleFetch } from "../interfaces";
