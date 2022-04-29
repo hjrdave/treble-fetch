@@ -18,7 +18,7 @@ export default function useFetch<R = Response>(url: RequestInfo, options?: Trebl
     }
 
     //manged state method for triggering GET fetch request
-    const get = (requestUrl?: string, options?: { headers: HeadersInit }) => {
+    const get = (requestUrl?: string, options?: TrebleFetch.MSGetOptions) => {
         managedStateRequest({
             url: requestUrl,
             method: 'GET',
@@ -27,7 +27,7 @@ export default function useFetch<R = Response>(url: RequestInfo, options?: Trebl
     }
 
     //manged state method for triggering POST fetch request
-    const post = (requestUrl?: string, body?: BodyInit | { [key: string]: any }, options?: { headers: HeadersInit }) => {
+    const post = (requestUrl?: string, body?: TrebleFetch.Body, options?: TrebleFetch.MSPostOptions) => {
         managedStateRequest({
             url: requestUrl,
             method: 'POST',

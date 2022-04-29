@@ -88,4 +88,16 @@ export declare namespace TrebleFetch {
         onMount?: () => void;
         token?: string;
     }
+
+    //useFetch Post Method Options (managed state)
+    export interface MSPostOptions {
+        headers?: HeadersInit;
+        bodyType?: BodyType;
+    }
+
+    //useFetch Post Method Options (managed state)
+    export interface MSGetOptions {
+        headers?: HeadersInit;
+        responseType?: ResponseType;
+    }
 }

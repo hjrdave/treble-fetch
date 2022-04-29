@@ -70,7 +70,8 @@ export default function useFetchMethods<R = Response | undefined>(url: RequestIn
                 body: body
             }
             const res = await baseFetchRequest(baseFetchOptions);
-            const extractedRes: unknown = (res) ? extractRes(res, responseType) : res;
+            const extractedRes: unknown = (res) ? await extractRes(res, responseType) : res;
+            console.log(extractedRes);
             if (res?.ok) {
                 setResponse(extractedRes as R);
                 setLoading(false);
@@ -137,31 +138,31 @@ export default function useFetchMethods<R = Response | undefined>(url: RequestIn
     //async get method
     const getRequest = (url: string, options?: TrebleFetch.GetOptions) => {
         const { body: initBody, ...hookOptions } = initOptions;
+        const requestUrl = `${baseUrl || ''}${url || ''}`;
         const requestOptions = {
             ...hookOptions,
             ...options,
-            requestUrl: `${baseUrl}${url}`,
             token: (options?.token) ? options?.token : token,
             headers: (options?.headers) ? { ...headers, ...options.headers } : headers,
             responseType: (options?.responseType) ? options.responseType : responseType
         }
-        return get(url, requestOptions);
+        return get(requestUrl, requestOptions);
     }
 
     //async post method
     const postRequest = (url: string, body?: TrebleFetch.Body, options?: TrebleFetch.PostOptions) => {
         const requestBody = (body) ? body : fallBackBody;
         const { body: initBody, ...hookOptions } = initOptions;
+        const requestUrl = `${baseUrl || ''}${url || ''}`;
         const requestOptions = {
             ...hookOptions,
             ...options,
-            requestUrl: `${baseUrl}${url}`,
             token: (options?.token) ? options?.token : token,
             headers: (options?.headers) ? { ...headers, ...options.headers } : headers,
             responseType: (options?.responseType) ? options.responseType : responseType,
             bodyType: (options?.bodyType) ? options.bodyType : bodyType
         }
-        return post(url, requestBody, requestOptions);
+        return post(requestUrl, requestBody, requestOptions);
     }
 
     //method for triggering managed state fetch request

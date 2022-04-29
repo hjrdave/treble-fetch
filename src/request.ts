@@ -12,7 +12,8 @@ export const baseFetchRequest = async (options: TrebleFetch.BaseRequestOptions) 
     try {
         //fetch data from API
         const { baseUrl, requestUrl, body, signal, headers, bodyType, method, responseType, ..._options } = options;
-        const data = fetch(`${baseUrl}${(requestUrl) ? requestUrl : ''}`, {
+        const url = `${baseUrl || ''}${requestUrl || ''}`;
+        const data = fetch(url, {
             ..._options,
             method: method,
             signal: signal,
@@ -54,13 +55,13 @@ export const get = async (url: string, options: TrebleFetch.GetOptions) => {
             headers: headers,
             requestUrl: url,
             method: 'GET'
-        }
+        };
         const data = baseFetchRequest(requstOptions);
         const res = await data;
         const extractedRes = (res) ? extractRes(res, options.responseType) : res;
         return extractedRes;
     } catch (error) {
-
+        console.error(`Treble Fetch: ${error}`);
     }
 };
 
