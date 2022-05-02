@@ -1,6 +1,7 @@
 /**
  * Manages hook methods
  */
+import React from 'react';
 import useFetchOptions from "./use-fetch-options";
 import extractRes from "../fetch-helpers/extract-res";
 import { get, post, baseFetchRequest } from '../request';
@@ -33,10 +34,14 @@ export default function useFetchMethods<R = Response | undefined>(url: RequestIn
         initOptions,
         bodyType,
         fetchOnMount,
-        responseType
+        responseType,
+        retryDelay,
+        retries,
+        retryOn
     } = useFetchOptions(url, options);
 
     const fallBackBody = { msg: 'Treble Fetch: Fallback for when a body is left off of a POST request' };
+    const [attempt, setAttempt] = React.useState(0);
 
     //method to manually abort a fetch request
     const abort = () => abortController.abort();
@@ -71,18 +76,32 @@ export default function useFetchMethods<R = Response | undefined>(url: RequestIn
             }
             const res = await baseFetchRequest(baseFetchOptions);
             const extractedRes: unknown = (res) ? await extractRes(res, responseType) : res;
-            if (res?.ok) {
-                setResponse(extractedRes as R);
-                setLoading(false);
-            }
-            else if (res?.ok === false) {
-                setLoading(false);
-                if (res?.statusText.length > 0) {
-                    setError(`Treble Fetch: ${res?.statusText}`);
-                } else {
-                    setError(`Treble Fetch: Server returned status ${res?.status}`);
+            if (res) {
+                if (res?.ok) {
+                    setResponse(extractedRes as R);
+                    setLoading(false);
+                    setAttempt(0);
                 }
-            };
+                else if (res?.ok === false) {
+                    setLoading(false);
+                    if (res?.statusText.length > 0) {
+                        setError(`Treble Fetch: ${res?.statusText}`);
+                    } else {
+                        setError(`Treble Fetch: Server returned status ${res?.status}`);
+                    }
+                    //allow for retries
+                    if (retryOn?.includes(res?.status) && attempt < retries) {
+                        setAttempt(attempt + 1);
+                        setTimeout(() => {
+                            setTriggerFetch([]);
+                        }, retryDelay);
+                    } else {
+                        setAttempt(0);
+                    }
+                };
+            } else {
+                setError(`Treble Fetch: Response returned undefined`);
+            }
         }
         catch (error: any) {
             setError(error);

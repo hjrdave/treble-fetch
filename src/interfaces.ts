@@ -4,6 +4,7 @@ export declare namespace TrebleFetch {
     export type Headers = HeadersInit | { [key: string]: any };
     export type ResponseType = 'json' | 'text' | 'formData' | 'blob' | 'arrayBuffer' | 'raw';
     export type BodyType = 'json' | 'text' | 'formData' | 'urlSearchParams' | 'blob' | 'arrayBuffer' | 'raw';
+    export type Error = string | object | null | undefined;
 
     //Native JS Fetch options
     export interface JSFetchOptions {
@@ -87,6 +88,9 @@ export declare namespace TrebleFetch {
         fetchOnMount?: boolean | string;
         onMount?: () => void;
         token?: string;
+        retries?: number;
+        retryOn?: number[];
+        retryDelay?: number
     }
 
     //useFetch Post Method Options (managed state)
@@ -101,3 +105,5 @@ export declare namespace TrebleFetch {
         responseType?: ResponseType;
     }
 }
+
+//((attempt: number, error?: object | string | null, response?: Response) => Promise<boolean>)

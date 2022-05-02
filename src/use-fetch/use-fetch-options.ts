@@ -55,6 +55,15 @@ export default function useFetchOptions<R = Response | undefined>(url: RequestIn
     //allows for the canceling of fetch requests before resolve
     const [abortController, setAbortController] = React.useState<AbortController>(new AbortController());
 
+    //how many times fetch should retry when after it fails
+    const [retries, setRetries] = React.useState((options?.retries !== undefined) ? options.retries : 0);
+
+    //retry delay between retries
+    const [retryDelay, setRetryDelay] = React.useState<number>((options?.retryDelay !== undefined) ? options?.retryDelay : 200);
+
+    //what status code should fetch retry on
+    const [retryOn, setRetryOn] = React.useState<number[]>((options?.retryOn) ? options.retryOn : []);
+
     /** Allows for useFetch options to be dynamic (Not all option props are dynamic, might change later)*/
     useNonInitialEffect(() => {
         if (options?.method) {
@@ -104,6 +113,24 @@ export default function useFetchOptions<R = Response | undefined>(url: RequestIn
         }
     }, [url]);
 
+    useNonInitialEffect(() => {
+        if (options?.retries !== undefined) {
+            setRetries(options?.retries);
+        }
+    }, [options?.retries]);
+
+    useNonInitialEffect(() => {
+        if (options?.retryDelay !== undefined) {
+            setRetryDelay(options?.retryDelay);
+        }
+    }, [options?.retryDelay]);
+
+    useNonInitialEffect(() => {
+        if (options?.retryOn !== undefined) {
+            setRetryOn(options?.retryOn);
+        }
+    }, [options?.retryOn]);
+
     return {
         method,
         setMethod,
@@ -135,6 +162,9 @@ export default function useFetchOptions<R = Response | undefined>(url: RequestIn
         setFetchOnMount,
         initOptions,
         responseType,
-        setResponseType
+        setResponseType,
+        retries,
+        retryDelay,
+        retryOn
     }
 }
