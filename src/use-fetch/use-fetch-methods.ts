@@ -71,7 +71,6 @@ export default function useFetchMethods<R = Response | undefined>(url: RequestIn
             }
             const res = await baseFetchRequest(baseFetchOptions);
             const extractedRes: unknown = (res) ? await extractRes(res, responseType) : res;
-            console.log(extractedRes);
             if (res?.ok) {
                 setResponse(extractedRes as R);
                 setLoading(false);
