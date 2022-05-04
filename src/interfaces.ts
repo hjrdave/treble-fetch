@@ -5,6 +5,7 @@ export declare namespace TrebleFetch {
     export type ResponseType = 'json' | 'text' | 'formData' | 'blob' | 'arrayBuffer' | 'raw';
     export type BodyType = 'json' | 'text' | 'formData' | 'urlSearchParams' | 'blob' | 'arrayBuffer' | 'raw';
     export type Error = string | object | null | undefined;
+    export type Preload = () => Promise<{ default: React.ComponentType<any> }>;
 
     //Native JS Fetch options
     export interface JSFetchOptions {
@@ -104,6 +105,23 @@ export declare namespace TrebleFetch {
         headers?: HeadersInit;
         responseType?: ResponseType;
     }
+
+    //Route object for indexing routes
+    export interface RouteObject {
+        caseSensitive?: boolean;
+        children?: RouteObject[];
+        element?: any
+        index?: boolean;
+        path?: string;
+    }
+
+    //Route Index object
+    export interface RouteIndexObject {
+        path: string;
+        element?: React.ReactNode;
+        preload?: TrebleFetch.Preload
+    }
+
 }
 
 //((attempt: number, error?: object | string | null, response?: Response) => Promise<boolean>)

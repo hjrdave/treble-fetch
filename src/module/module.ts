@@ -3,21 +3,15 @@
 */
 
 import { createModule } from 'treble-gsm';
+import TFStore from '../Store';
 
-const TrebleFetch = createModule({
+const TrebleFetchM = createModule({
 
-    name: 'treble-persist',
+    name: 'treble-fetch',
     namespace: 'tf',
-    extendStore: {
-        data: [{
-            action: 'tf_updateRouteIndex',
-            state: {
-                tf_routeIndex: []
-            }
-        }]
-    }
+    extendStore: TFStore
 
 });
 
-export default TrebleFetch
+export default TrebleFetchM
 
